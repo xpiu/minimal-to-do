@@ -43,7 +43,7 @@ Start a local server to use the Kanban board. Here's how:
 
 ## How to Use
 
-- **OPTION 1**: Use the Kanban board in your browser using todo.html AND/OR the todo.md file simultaneously.
+### **OPTION 1**: Use the Kanban board in your browser using todo.html AND/OR the todo.md file simultaneously.
 
 1. **Start a quick, disposable local server to use the Kanban board**:
    ```bash
@@ -60,7 +60,7 @@ Start a local server to use the Kanban board. Here's how:
 
 3. **Enable Editing Mode** (OPTIONAL): Click "Enable Editing Mode" to unlock full task management features
 
-- **OPTION 2**: Use the todo.md file to list tasks. Ignore or delete the Kanban board todo.html file.
+### **OPTION 2**: Use the todo.md file to list tasks. Ignore or delete the Kanban board todo.html file.
 
 ## Browser Compatibility
 
