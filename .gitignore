@@ -1,0 +1,25 @@
+# Logs and debug files
+*.log
+npm-debug.log*
+yarn-debug.log*
+.pnpm-debug.log*
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# IDE, AI and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+claude/
+/claude
+cursor/
+/cursor
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
