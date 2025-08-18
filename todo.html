@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="A to-do app with a Kanban board for organizing tasks. Tasks are stored in a Markdown file.">
     <title>To-do Kanban board</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 10h16M8 16h12M8 22h8' stroke='%23000' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='6' cy='10' r='1.5' fill='%23000'/%3E%3Ccircle cx='6' cy='16' r='1.5' fill='%23000'/%3E%3Ccircle cx='6' cy='22' r='1.5' fill='%23000'/%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -14,12 +13,9 @@
         - Orange: #ff8800 (priorities, highlights)
         - Blue: #4488ff (links, info)
         - Red: #ff4444 (urgent, errors)
-        
-        Theme System:
-        - Dark Mode (default): Dark backgrounds (#1a1a1a, #2a2a2a, #333) with light text (#e0e0e0)
-        - Light Mode: Light backgrounds (#ffffff, #f8f9fa, #e9ecef) with dark text (#333333)
-        - CSS custom properties automatically switch between themes via [data-theme="light"]
-        - All accent colors maintain proper contrast ratios in both themes
+        - Dark Mode: Dark grays (#1a1a1a, #2a2a2a, #333)
+        - Light Mode: Light grays (#ffffff, #f8f9fa, #e9ecef)
+        - Accent colors maintain contrast in both themes
         */
         * {
             margin: 0;
@@ -117,7 +113,7 @@
             color: var(--text-color);
             min-height: 100vh;
             padding: 20px;
-            font-size: 13px;
+            font-size: 14px;
             line-height: 1.5;
             transition: background-color 0.3s ease, color 0.3s ease;
         }
@@ -972,12 +968,40 @@
             margin-top: 6px;
             line-height: 1.3;
             position: relative;
-            padding: 3px 6px 3px 12px;
+            padding: 3px 6px 3px 28px;
             background: rgba(0, 0, 0, 0.1);
             border-radius: 2px;
             margin-bottom: 2px;
             transition: all 0.2s ease;
             border-left: 2px solid var(--text-subtle);
+            display: flex;
+            align-items: center;
+        }
+
+        .subtask-checkbox {
+            position: absolute;
+            left: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            cursor: pointer;
+            accent-color: var(--focus-primary);
+        }
+
+        .subtask-content {
+            flex: 1;
+            transition: all 0.2s ease;
+        }
+
+        .subtask.completed .subtask-content {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .subtask.completed {
+            border-left-color: var(--focus-primary);
+            background: rgba(68, 170, 68, 0.1);
         }
 
         [data-theme="light"] .subtask {
@@ -2903,6 +2927,18 @@
             // Remove the initial "- "
             let content = trimmed.substring(2);
             
+            // Check for checkbox syntax for subtasks
+            let completed = false;
+            if (isSubtask) {
+                if (content.startsWith('[x] ') || content.startsWith('[X] ')) {
+                    completed = true;
+                    content = content.substring(4);
+                } else if (content.startsWith('[ ] ')) {
+                    completed = false;
+                    content = content.substring(4);
+                }
+            }
+            
             // Extract keywords first (hashtags)
             const keywords = [];
             const keywordMatches = content.match(/#[\w\d-]+/g);
@@ -2923,12 +2959,19 @@
             // Clean up extra dashes and spaces
             content = content.replace(/\s+-\s*$/, '').trim();
             
-            return {
+            const result = {
                 content,
                 priority,
                 keywords,
                 isSubtask
             };
+            
+            // Add completed property for subtasks
+            if (isSubtask) {
+                result.completed = completed;
+            }
+            
+            return result;
         }
         
         function createTaskCard(task, index, columnName) {
@@ -3033,14 +3076,34 @@
                     console.log(`🔧 CREATING SUBTASK ${subtaskIndex}: "${subtask.content}"`);
                     const subtaskDiv = document.createElement('div');
                     subtaskDiv.className = 'subtask';
-                    subtaskDiv.textContent = subtask.content;
+                    if (subtask.completed) {
+                        subtaskDiv.classList.add('completed');
+                    }
+                    
+                    // Create checkbox
+                    const checkbox = document.createElement('input');
+                    checkbox.type = 'checkbox';
+                    checkbox.className = 'subtask-checkbox';
+                    checkbox.checked = subtask.completed || false;
+                    checkbox.addEventListener('change', (e) => {
+                        e.stopPropagation();
+                        toggleSubtaskCompletion(columnName, index, subtaskIndex, e.target.checked);
+                    });
+                    
+                    // Create content wrapper
+                    const contentSpan = document.createElement('span');
+                    contentSpan.className = 'subtask-content';
+                    contentSpan.textContent = subtask.content;
+                    
+                    subtaskDiv.appendChild(checkbox);
+                    subtaskDiv.appendChild(contentSpan);
                     
                     // Add edit mode functionality for subtasks
                     if (isEditMode) {
                         subtaskDiv.dataset.subtaskIndex = subtaskIndex;
                         
-                        // Enhanced event handling for subtasks
-                        subtaskDiv.addEventListener('dblclick', (e) => {
+                        // Enhanced event handling for subtasks - only on content span
+                        contentSpan.addEventListener('dblclick', (e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             
@@ -4021,7 +4084,8 @@
                     // Add subtasks
                     if (task.subtasks && task.subtasks.length > 0) {
                         task.subtasks.forEach(subtask => {
-                            markdown += `  - ${subtask.content}\n`;
+                            const checkbox = subtask.completed ? '[x]' : '[ ]';
+                            markdown += `  - ${checkbox} ${subtask.content}\n`;
                         });
                     }
                 });
@@ -4572,6 +4636,7 @@
         function sanitizeSubtaskData(subtask) {
             return {
                 content: (subtask.content || '').trim(),
+                completed: subtask.completed || false,
                 isSubtask: true
             };
         }
@@ -4707,6 +4772,21 @@
                 
                 return { deleted: subtask };
             }, 'deleteSubtask');
+        }
+
+        async function toggleSubtaskCompletion(columnName, taskIndex, subtaskIndex, completed) {
+            return await safeSubtaskOperation(async () => {
+                const task = window.currentSections[columnName][taskIndex];
+                if (!task.subtasks || subtaskIndex >= task.subtasks.length) {
+                    throw new Error('Invalid subtask index');
+                }
+                
+                task.subtasks[subtaskIndex].completed = completed;
+                
+                renderKanbanBoard(window.currentSections);
+                const saveSuccess = await saveTodoDataToFile(window.currentSections);
+                showSaveNotification(saveSuccess ? `Subtask ${completed ? 'completed' : 'uncompleted'}` : 'Error saving changes', !saveSuccess);
+            }, 'toggleSubtaskCompletion');
         }
 
         async function addSubtask(columnName, taskIndex) {
