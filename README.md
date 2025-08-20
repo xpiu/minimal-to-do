@@ -74,9 +74,12 @@ Start a local server to use the Kanban board. Here's how:
 - Firefox
 - Safari
 
-# Task Elements
-- **Priority**: Add `- Urgent`, `- High`, `- Normal`, or `- Low` at the end (don't forget the dash -)
-- **Keywords**: Use hashtags like `#project #urgent #meeting`
+## Markdown conventions for items in both todo.md
+
+By sticking to the following conventions, our To-do app will interpret and render the content. 
+
+- **Priority**: Add " - Urgent", " - High", " - Normal", or " - Low" at the end (don't forget the dash -)
+- **Keywords**: Use hashtags like at the end of a task title text `#project #urgent #meeting`
 - **Subtasks**: Start your indentation with 2 spaces for subtasks, e.g. `  - `
 
 ## About the Editing Mode
