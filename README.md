@@ -74,7 +74,7 @@ Start a local server to use the Kanban board. Here's how:
 - Firefox
 - Safari
 
-## Markdown conventions for items in both todo.md
+## Markdown conventions for items in todo.md
 
 By sticking to the following conventions, our To-do app will interpret and render the content. 
 

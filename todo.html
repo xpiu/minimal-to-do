@@ -3,19 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>To-do Kanban board</title>
+    <title>To-do with Kanban board</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M8 10h16M8 16h12M8 22h8' stroke='%23000' stroke-width='2.5' stroke-linecap='round'/%3E%3Ccircle cx='6' cy='10' r='1.5' fill='%23000'/%3E%3Ccircle cx='6' cy='16' r='1.5' fill='%23000'/%3E%3Ccircle cx='6' cy='22' r='1.5' fill='%23000'/%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="info-for-AI" content="
+    This is a to-do app with a Kanban board. Data is stored in a Markdown file.
+
+    Markdown conventions in our Markdown storage file:
+    - Priority: Add ' - Urgent', ' - High', ' - Normal', or ' - Low' at the end (don't forget the dash -)
+    - Keywords: Use hashtags like at the end of a task name `#project #urgent #meeting`
+    - Subtasks: Start your indentation with 2 spaces for subtasks, e.g. `  - `
+
+    Color Palette:
+    - Primary Green: #44aa44 (buttons, success states)
+    - Orange: #ff8800 (priorities, highlights)
+    - Blue: #4488ff (links, info)
+    - Red: #ff4444 (urgent, errors)
+    - Dark Mode: Dark grays (#1a1a1a, #2a2a2a, #333)
+    - Light Mode: Light grays (#ffffff, #f8f9fa, #e9ecef)
+    - Accent colors maintain contrast in both themes
+    ">
     <style>
         /*
-        Color Palette:
-        - Primary Green: #44aa44 (buttons, success states)
-        - Orange: #ff8800 (priorities, highlights)
-        - Blue: #4488ff (links, info)
-        - Red: #ff4444 (urgent, errors)
-        - Dark Mode: Dark grays (#1a1a1a, #2a2a2a, #333)
-        - Light Mode: Light grays (#ffffff, #f8f9fa, #e9ecef)
-        - Accent colors maintain contrast in both themes
+
         */
         * {
             margin: 0;
@@ -2407,12 +2417,12 @@
             }
             
             generateTaskAriaLabel(taskElement, index, columnName) {
-                const content = taskElement.querySelector('.task-text')?.textContent || 'Untitled task';
+                const title = taskElement.querySelector('.task-text')?.textContent || 'Untitled task';
                 const priority = taskElement.querySelector('.priority')?.textContent;
                 const keywords = Array.from(taskElement.querySelectorAll('.keyword')).map(k => k.textContent);
                 const subtaskCount = taskElement.querySelectorAll('.subtask').length;
                 
-                let label = `Task ${index + 1} in ${columnName}: ${content}`;
+                let label = `Task ${index + 1} in ${columnName}: ${title}`;
                 
                 if (priority) {
                     label += `, Priority: ${priority}`;
@@ -2879,7 +2889,7 @@
                         // Sanitize subtask data
                         const sanitizedSubtask = sanitizeSubtaskData(task);
                         lastTask.subtasks.push(sanitizedSubtask);
-                        console.log(`🔍 ADDED SUBTASK "${sanitizedSubtask.content}" to task "${lastTask.content.substring(0, 30)}..."`); 
+                        console.log(`🔍 ADDED SUBTASK "${sanitizedSubtask.title}" to task "${lastTask.title.substring(0, 30)}..."`);   
                     } else if (task) {
                         console.warn(`Orphaned subtask at line ${lineNumber}: ${line}`);
                     }
@@ -2905,7 +2915,7 @@
                     if (tasksWithSubtasks.length > 0) {
                         console.log(`🎆 ${columnName}: ${tasksWithSubtasks.length} tasks with subtasks`);
                         tasksWithSubtasks.forEach((task, idx) => {
-                            console.log(`   Task ${idx + 1}: "${task.content.substring(0, 40)}..." (${task.subtasks.length} subtasks)`);
+                            console.log(`   Task ${idx + 1}: "${task.title.substring(0, 40)}..." (${task.subtasks.length} subtasks)`);
                         });
                     }
                 });
@@ -2925,42 +2935,42 @@
             if (!trimmed.startsWith('- ')) return null;
             
             // Remove the initial "- "
-            let content = trimmed.substring(2);
+            let title = trimmed.substring(2);
             
             // Check for checkbox syntax for subtasks
             let completed = false;
             if (isSubtask) {
-                if (content.startsWith('[x] ') || content.startsWith('[X] ')) {
+                if (title.startsWith('[x] ') || title.startsWith('[X] ')) {
                     completed = true;
-                    content = content.substring(4);
-                } else if (content.startsWith('[ ] ')) {
+                    title = title.substring(4);
+                } else if (title.startsWith('[ ] ')) {
                     completed = false;
-                    content = content.substring(4);
+                    title = title.substring(4);
                 }
             }
             
             // Extract keywords first (hashtags)
             const keywords = [];
-            const keywordMatches = content.match(/#[\w\d-]+/g);
+            const keywordMatches = title.match(/#[\w\d-]+/g);
             if (keywordMatches) {
                 keywords.push(...keywordMatches);
                 // Remove keywords from content
-                content = content.replace(/#[\w\d-]+/g, '').trim();
+                title = title.replace(/#[\w\d-]+/g, '').trim();
             }
             
             // Extract priority (looks for - Priority, now that keywords are removed)
             let priority = 'normal';
-            const priorityMatch = content.match(/\s+-\s+(urgent|high|normal|low)\s*$/i);
+            const priorityMatch = title.match(/ - (urgent|high|normal|low)\s*$/i);
             if (priorityMatch) {
                 priority = priorityMatch[1].toLowerCase();
-                content = content.replace(priorityMatch[0], '');
+                title = title.replace(priorityMatch[0], '');
             }
             
             // Clean up extra dashes and spaces
-            content = content.replace(/\s+-\s*$/, '').trim();
+            title = title.replace(/\s+-\s*$/, '').trim();
             
             const result = {
-                content,
+                title,
                 priority,
                 keywords,
                 isSubtask
@@ -3023,7 +3033,7 @@
             // Add task text only (no priority/keywords mixed in)
             const textSpan = document.createElement('span');
             textSpan.className = 'task-text';
-            textSpan.textContent = task.content;
+            textSpan.textContent = task.title;
             contentDiv.appendChild(textSpan);
             
             // Add priority badge
@@ -3065,7 +3075,7 @@
             
             // Add subtasks below - FIXED VERSION WITH DEBUG LOGGING
             if (task.subtasks && task.subtasks.length > 0) {
-                console.log(`🔧 RENDERING SUBTASKS: Found ${task.subtasks.length} subtasks for task: "${task.content.substring(0, 30)}..."`); 
+                console.log(`🔧 RENDERING SUBTASKS: Found ${task.subtasks.length} subtasks for task: "${task.title.substring(0, 30)}..."`);  
                 card.classList.add('has-subtasks');
                 
                 // Create a container for all subtasks to ensure proper DOM structure
@@ -3073,7 +3083,7 @@
                 subtaskContainer.className = 'subtask-container';
                 
                 task.subtasks.forEach((subtask, subtaskIndex) => {
-                    console.log(`🔧 CREATING SUBTASK ${subtaskIndex}: "${subtask.content}"`);
+                    console.log(`🔧 CREATING SUBTASK ${subtaskIndex}: "${subtask.title}"`); 
                     const subtaskDiv = document.createElement('div');
                     subtaskDiv.className = 'subtask';
                     if (subtask.completed) {
@@ -3093,7 +3103,7 @@
                     // Create content wrapper
                     const contentSpan = document.createElement('span');
                     contentSpan.className = 'subtask-content';
-                    contentSpan.textContent = subtask.content;
+                    contentSpan.textContent = subtask.title;
                     
                     subtaskDiv.appendChild(checkbox);
                     subtaskDiv.appendChild(contentSpan);
@@ -3753,9 +3763,9 @@
                     if (tasksWithSubtasks.length > 0) {
                         console.log(`🔍 ${columnName}: ${tasksWithSubtasks.length} tasks with subtasks:`);
                         tasksWithSubtasks.forEach((task, taskIdx) => {
-                            console.log(`   Task ${taskIdx}: "${task.content.substring(0, 40)}..." has ${task.subtasks.length} subtasks:`);
+                            console.log(`   Task ${taskIdx}: "${task.title.substring(0, 40)}..." has ${task.subtasks.length} subtasks:`);
                             task.subtasks.forEach((st, stIdx) => {
-                                console.log(`     Subtask ${stIdx}: "${st.content}"`);
+                                console.log(`     Subtask ${stIdx}: "${st.title}"`); 
                             });
                         });
                     } else {
@@ -4067,7 +4077,7 @@
                 
                 const tasks = sections[columnName] || [];
                 tasks.forEach(task => {
-                    markdown += `- ${task.content}`;
+                    markdown += `- ${task.title}`;
                     
                     // Add priority if not normal
                     if (task.priority && task.priority !== 'normal') {
@@ -4085,7 +4095,7 @@
                     if (task.subtasks && task.subtasks.length > 0) {
                         task.subtasks.forEach(subtask => {
                             const checkbox = subtask.completed ? '[x]' : '[ ]';
-                            markdown += `  - ${checkbox} ${subtask.content}\n`;
+                            markdown += `  - ${checkbox} ${subtask.title}\n`;
                         });
                     }
                 });
@@ -4224,7 +4234,7 @@
                 tasks.splice(newPosition, 0, task);
                 
                 console.log(`Reordered task within ${sourceColumn}: ${sourceIndex} → ${newPosition}`);
-                console.log('Task moved:', task.content);
+                console.log('Task moved:', task.title);
             } else {
                 // Handle cross-column move
                 const task = window.currentSections[sourceColumn][sourceIndex];
@@ -4285,7 +4295,7 @@
             overlay.innerHTML = `
                 <div class="edit-section">
                     <label>Task Content:</label>
-                    <textarea class="edit-content auto-resize-textarea" rows="1" placeholder="Task description ..."></textarea>
+                    <textarea class="edit-content auto-resize-textarea" rows="1" placeholder="Task name ..."></textarea>
                 </div>
                 <div class="edit-section">
                     <label>Priority:</label>
@@ -4329,7 +4339,7 @@
             card.classList.add('editing');
             
             // Populate fields
-            overlay.querySelector('.edit-content').value = task.content;
+            overlay.querySelector('.edit-content').value = task.title;
             const contentTextarea = overlay.querySelector('.edit-content');
             overlay.querySelector('.edit-priority').value = task.priority;
             // Show keywords as comma-separated list without # in the editor
@@ -4340,7 +4350,7 @@
             // Populate subtasks textarea
             const subtasksTextarea = overlay.querySelector('.edit-subtasks');
             if (task.subtasks && task.subtasks.length > 0) {
-                subtasksTextarea.value = task.subtasks.map(subtask => subtask.content).join('\n');
+                subtasksTextarea.value = task.subtasks.map(subtask => subtask.title).join('\n');
             } else {
                 subtasksTextarea.value = '';
             }
@@ -4392,12 +4402,12 @@
                     subtasksText.split('\n')
                         .map(line => line.trim())
                         .filter(line => line.length > 0)
-                        .map(content => ({ content, isSubtask: true })) 
+                        .map(title => ({ title, isSubtask: true })) 
                     : [];
                 
                 if (newContent) {
                     // Update task data
-                    window.currentSections[columnName][taskIndex].content = newContent;
+                    window.currentSections[columnName][taskIndex].title = newContent;
                     window.currentSections[columnName][taskIndex].priority = newPriority;
                     window.currentSections[columnName][taskIndex].keywords = newKeywords;
                     
@@ -4418,8 +4428,8 @@
                     
                     console.log('Task updated:', { newContent, newPriority, newKeywords });
                 } else {
-                    // If the task has no content, remove it if it was a newly created placeholder
-                    if (!window.currentSections[columnName][taskIndex].content || window.currentSections[columnName][taskIndex].content.trim() === '') {
+                    // If the task has no title, remove it if it was a newly created placeholder
+                    if (!window.currentSections[columnName][taskIndex].title || window.currentSections[columnName][taskIndex].title.trim() === '') {
                         window.currentSections[columnName].splice(taskIndex, 1);
                         renderKanbanBoard(window.currentSections);
                         showSaveNotification('Discarded empty task');
@@ -4441,11 +4451,11 @@
                 if (backdrop) backdrop.classList.remove('show');
                 document.body.style.overflow = document.body.dataset.prevOverflow || '';
                 // If cancelling and task is empty, remove placeholder
-                if (!task.content || task.content.trim() === '') {
+                if (!task.title || task.title.trim() === '') {
                     const tasks = window.currentSections[columnName];
                     if (Array.isArray(tasks)) {
                         const idx = tasks.indexOf(task);
-                        if (idx >= 0 && (!tasks[idx].content || tasks[idx].content.trim() === '')) {
+                        if (idx >= 0 && (!tasks[idx].title || tasks[idx].title.trim() === '')) {
                             tasks.splice(idx, 1);
                             renderKanbanBoard(window.currentSections);
                         }
@@ -4513,7 +4523,7 @@
         // Create new task function
         async function createNewTask(columnName, atTop = false) {
             const newTask = {
-                content: '',
+                title: '',
                 priority: 'normal',
                 keywords: [],
                 isSubtask: false
@@ -4583,7 +4593,7 @@
             const task = window.currentSections[columnName][taskIndex];
             
             // Confirm deletion
-            if (!confirm(`Delete task: "${task.content}"?`)) {
+            if (!confirm(`Delete task: "${task.title}"?`)) {
                 return;
             }
             
@@ -4597,7 +4607,7 @@
             // Show save notification
             showSaveNotification(saveSuccess ? 'Task deleted' : 'Error deleting task', !saveSuccess);
             
-            console.log(`Deleted task: "${task.content}" from ${columnName}`);
+            console.log(`Deleted task: "${task.title}" from ${columnName}`);
         }
 
         // Validation functions
@@ -4609,11 +4619,11 @@
                 tasks.forEach((task, taskIndex) => {
                     if (task.subtasks && task.subtasks.length > 0) {
                         task.subtasks.forEach((subtask, subtaskIndex) => {
-                            if (!subtask.content || subtask.content.trim() === '') {
-                                errors.push(`Empty subtask found in task "${task.content}" (${columnName})`);
+                            if (!subtask.title || subtask.title.trim() === '') {
+                                errors.push(`Empty subtask found in task "${task.title}" (${columnName})`);
                             }
                             if (!subtask.isSubtask) {
-                                errors.push(`Subtask missing isSubtask flag in task "${task.content}" (${columnName})`);
+                                errors.push(`Subtask missing isSubtask flag in task "${task.title}" (${columnName})`);
                             }
                         });
                     }
@@ -4625,7 +4635,7 @@
         
         function sanitizeTaskData(task) {
             return {
-                content: (task.content || '').trim(),
+                title: (task.title || '').trim(),
                 priority: ['urgent', 'high', 'normal', 'low'].includes(task.priority) ? task.priority : 'normal',
                 keywords: Array.isArray(task.keywords) ? task.keywords.filter(k => k.startsWith('#')) : [],
                 subtasks: task.subtasks ? task.subtasks.map(sanitizeSubtaskData) : undefined,
@@ -4635,7 +4645,7 @@
         
         function sanitizeSubtaskData(subtask) {
             return {
-                content: (subtask.content || '').trim(),
+                title: (subtask.title || '').trim(),
                 completed: subtask.completed || false,
                 isSubtask: true
             };
@@ -4663,7 +4673,7 @@
 
         // Subtask management functions
         async function editSubtaskInline(subtaskDiv, parentTask, subtaskIndex, taskIndex, columnName) {
-            const originalContent = parentTask.subtasks[subtaskIndex].content;
+            const originalContent = parentTask.subtasks[subtaskIndex].title;
             
             // Create auto-resizing textarea element
             const textarea = document.createElement('textarea');
@@ -4694,7 +4704,7 @@
             const saveSubtask = async () => {
                 const newContent = textarea.value.trim();
                 if (newContent && newContent !== originalContent) {
-                    parentTask.subtasks[subtaskIndex].content = newContent;
+                    parentTask.subtasks[subtaskIndex].title = newContent;
                     
                     // Re-render and save
                     renderKanbanBoard(window.currentSections);
@@ -4741,7 +4751,7 @@
                 const subtask = task.subtasks[subtaskIndex];
                 
                 // Confirm deletion
-                if (!confirm(`Delete subtask: "${subtask.content}"?`)) {
+                if (!confirm(`Delete subtask: "${subtask.title}"?`)) {
                     return { cancelled: true };
                 }
                 
@@ -4768,7 +4778,7 @@
                 }
                 
                 showSaveNotification('Subtask deleted', false);
-                console.log(`Deleted subtask: "${subtask.content}" from task: "${task.content}"`);
+                console.log(`Deleted subtask: "${subtask.title}" from task: "${task.title}"`);
                 
                 return { deleted: subtask };
             }, 'deleteSubtask');
@@ -4850,7 +4860,7 @@
                     
                     if (newContent.length > 0) {
                         if (!task.subtasks) task.subtasks = [];
-                        const newSubtask = sanitizeSubtaskData({ content: newContent, isSubtask: true });
+                        const newSubtask = sanitizeSubtaskData({ title: newContent, isSubtask: true });
                         task.subtasks.push(newSubtask);
                         
                         renderKanbanBoard(window.currentSections);
