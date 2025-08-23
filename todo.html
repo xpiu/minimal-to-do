@@ -2197,6 +2197,257 @@
                 0 0 0 2px var(--focus-subtle),
                 0 0 0 4px var(--focus-subtle-glow);
         }
+        
+        /* ==============================================
+           TASK DESCRIPTION PREVIEW + EXPAND STYLES
+           ============================================== */
+
+        /* Preview area - positioned between title and subtasks */
+        .task-description-preview {
+            display: flex;
+            align-items: center;
+            margin: 4px 0;
+            padding: 2px 0;
+            min-height: 16px;
+            font-size: 11px;
+            line-height: 1.3;
+            gap: 6px;
+        }
+
+        .description-preview-text {
+            flex: 1;
+            color: var(--text-muted);
+            opacity: 0.8;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+
+        /* Enhanced readability on hover */
+        .task-card:hover .description-preview-text {
+            opacity: 1;
+            color: color-mix(in srgb, var(--text-muted) 80%, var(--text-color) 20%);
+        }
+
+        /* Chevron toggle button - positioned within preview area */
+        .task-description-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 14px;
+            height: 14px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            color: var(--text-muted);
+            opacity: 0.6;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            flex-shrink: 0;
+            transform: translateY(-1px);
+        }
+
+        .task-description-toggle:hover {
+            opacity: 1;
+            background: color-mix(in srgb, var(--text-muted) 15%, transparent);
+            transform: translateY(-1px) scale(1.05);
+        }
+
+        .task-card:hover .task-description-toggle {
+            opacity: 0.8;
+        }
+
+        .task-description-toggle:focus-visible {
+            outline: 1px solid var(--focus-subtle);
+            outline-offset: 2px;
+            background: color-mix(in srgb, var(--text-muted) 20%, transparent);
+            opacity: 1;
+        }
+
+        /* Chevron rotation with bounce effect */
+        .task-description-toggle svg {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            width: 10px;
+            height: 10px;
+        }
+
+        .task-description-toggle.expanded svg {
+            transform: rotate(180deg) scale(1.1);
+        }
+
+        /* Expanded content container */
+        .task-description-expanded {
+            margin: 2px 0 0px 0;
+            overflow: hidden;
+            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform-origin: top;
+            padding: 1px 0;
+            border-radius: 3px;
+        }
+
+        .task-description-expanded.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            transform: translateY(-2px) scaleY(0.95);
+        }
+
+        .task-description-expanded.expanded {
+            max-height: 160px;
+            opacity: 1;
+            transform: translateY(0) scaleY(1);
+        }
+
+        /* Ellipsis indicator for multiple description lines */
+        .description-ellipsis-indicator {
+            color: var(--text-muted);
+            opacity: 0.6;
+            font-size: 11px;
+            margin-left: 2px;
+            user-select: none;
+            font-weight: 500;
+        }
+
+        .task-card:hover .description-ellipsis-indicator {
+            opacity: 0.8;
+        }
+
+        /* Description content styling - for expanded content */
+        .task-description-content {
+            padding: 4px 0;
+            margin-bottom: 2px;
+            position: relative;
+        }
+
+        /* Individual description lines - styled like preview text */
+        .description-line {
+            font-size: 11px;
+            line-height: 1.3;
+            color: var(--text-muted);
+            opacity: 0.8;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            margin: 1px 0;
+            padding: 1px 0;
+            word-wrap: break-word;
+        }
+
+        /* Enhanced readability on hover */
+        .task-card:hover .description-line {
+            opacity: 1;
+            color: color-mix(in srgb, var(--text-muted) 80%, var(--text-color) 20%);
+        }
+
+        /* Spacing coordination between elements */
+        .task-card.has-description .task-content {
+            margin-bottom: 2px;
+            padding-bottom: 2px;
+        }
+
+        .task-card.has-description.has-subtasks .task-description-expanded {
+            margin-bottom: 1px;
+        }
+
+        .task-card.has-description.has-subtasks .task-description-preview {
+            margin-bottom: 1px;
+        }
+
+        /* Accessibility - high contrast mode support */
+        @media (forced-colors: active) {
+            .task-description-toggle {
+                border: 1px solid ButtonText;
+            }
+            
+            .task-description-content {
+                border-left: 2px solid ButtonText;
+                background: transparent;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            .task-description-toggle svg,
+            .task-description-expanded,
+            .task-description-content {
+                transition: none;
+                animation: none;
+            }
+            
+            .task-description-toggle.expanded svg {
+                transform: rotate(180deg);
+            }
+            
+            .task-description-expanded.collapsed {
+                transform: none;
+            }
+        }
+
+        /* Focus management in edit mode */
+        .edit-mode-enabled .task-description-toggle:focus-visible {
+            outline: 1px solid var(--focus-subtle);
+            outline-offset: 1px;
+            box-shadow: 0 0 0 2px var(--focus-subtle-alpha);
+        }
+
+        /* Responsive considerations */
+        @media (max-width: 768px) {
+            .task-description-preview {
+                font-size: 10px;
+                margin: 2px 0;
+            }
+            
+            .description-line {
+                margin: 0.5px 0;
+                padding: 0.5px 0;
+            }
+            
+            .task-description-content {
+                font-size: 10px;
+                padding: 4px 6px 4px 8px;
+                line-height: 1.3;
+            }
+            
+            .task-description-toggle {
+                width: 12px;
+                height: 12px;
+            }
+            
+            .task-description-toggle svg {
+                width: 9px;
+                height: 9px;
+            }
+            
+            .task-card.has-description.has-subtasks .task-description-expanded {
+                margin-bottom: 4px;
+            }
+            
+            .task-card.has-description.has-subtasks .task-description-preview {
+                margin-bottom: 3px;
+            }
+        }
+
+        /* Print styles - expand all descriptions */
+        @media print {
+            .task-description-expanded.collapsed {
+                max-height: none;
+                opacity: 1;
+                margin: 2px 0 4px 0;
+                transform: none;
+            }
+            
+            .task-description-toggle {
+                display: none;
+            }
+            
+            .description-preview-text {
+                white-space: normal;
+                overflow: visible;
+                text-overflow: clip;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2899,6 +3150,22 @@
                         console.warn(`Orphaned subtask at line ${lineNumber}: ${line}`);
                     }
                 }
+                
+                // Parse task descriptions (lines with 2-space indentation + > + space)
+                if (currentSection && line.match(/^  > /)) {
+                    console.log(`📝 PARSING DESCRIPTION at line ${lineNumber}: "${line.trim()}"`);
+                    if (sections[currentSection].length > 0) {
+                        const lastTask = sections[currentSection][sections[currentSection].length - 1];
+                        if (!lastTask.descriptions) lastTask.descriptions = [];
+                        
+                        // Remove "  > " prefix and add to descriptions
+                        const descriptionText = line.substring(4); // Remove "  > "
+                        lastTask.descriptions.push(descriptionText);
+                        console.log(`📝 ADDED DESCRIPTION "${descriptionText.substring(0, 40)}..." to task "${lastTask.title.substring(0, 30)}..."`);
+                    } else {
+                        console.warn(`Orphaned description at line ${lineNumber}: ${line}`);
+                    }
+                }
             }
             
             // Post-processing validation
@@ -2926,6 +3193,27 @@
                 });
             } else {
                 console.warn('⚠️ NO SUBTASKS FOUND IN PARSING - Check markdown format');
+            }
+            
+            // Log successful description parsing with detailed breakdown
+            const totalDescriptions = Object.values(sections).reduce((count, tasks) => {
+                return count + tasks.reduce((descCount, task) => descCount + (task.descriptions ? task.descriptions.length : 0), 0);
+            }, 0);
+            if (totalDescriptions > 0) {
+                console.log(`📝 PARSING COMPLETE: Found ${totalDescriptions} description lines successfully`);
+                // Log detailed breakdown
+                Object.keys(sections).forEach(columnName => {
+                    const tasks = sections[columnName] || [];
+                    const tasksWithDescriptions = tasks.filter(task => task.descriptions && task.descriptions.length > 0);
+                    if (tasksWithDescriptions.length > 0) {
+                        console.log(`📝 ${columnName}: ${tasksWithDescriptions.length} tasks with descriptions`);
+                        tasksWithDescriptions.forEach((task, idx) => {
+                            console.log(`   Task ${idx + 1}: "${task.title.substring(0, 40)}..." (${task.descriptions.length} description lines)`);
+                        });
+                    }
+                });
+            } else {
+                console.log('ℹ️ NO DESCRIPTIONS FOUND IN PARSING - Tasks will display without descriptions');
             }
             
             // If markdown defines columns, adopt that order dynamically
@@ -3062,6 +3350,152 @@
             });
             
             card.appendChild(contentDiv);
+            
+            // Add task descriptions (preview + expandable)
+            if (task.descriptions && task.descriptions.length > 0) {
+                console.log(`📝 RENDERING DESCRIPTIONS: Found ${task.descriptions.length} descriptions for task: "${task.title.substring(0, 30)}..."`);
+                card.classList.add('has-description');
+                
+                const firstLine = task.descriptions[0];
+                const hasMultipleLines = task.descriptions.length > 1;
+                const remainingLines = task.descriptions.slice(1);
+                
+                // Create preview container (positioned below title, above subtasks)
+                const previewContainer = document.createElement('div');
+                previewContainer.className = 'task-description-preview';
+                
+                const previewText = document.createElement('span');
+                previewText.className = 'description-preview-text';
+                previewText.textContent = firstLine;
+                
+                // Create chevron toggle button (only if multiple lines or if truncation needed)
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'task-description-toggle';
+                toggleBtn.setAttribute('aria-label', 'Toggle full description');
+                toggleBtn.setAttribute('aria-expanded', 'false');
+                toggleBtn.innerHTML = `
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                `;
+                
+                previewContainer.appendChild(previewText);
+                
+                // Only add chevron if there are multiple description lines
+                if (hasMultipleLines) {
+                    // Add ellipsis indicator for multiple lines (positioned first)
+                    const ellipsisIndicator = document.createElement('span');
+                    ellipsisIndicator.className = 'description-ellipsis-indicator';
+                    ellipsisIndicator.textContent = '...';
+                    previewContainer.appendChild(ellipsisIndicator);
+                    
+                    previewContainer.appendChild(toggleBtn);
+                    
+                    // Create expanded content container (for remaining lines)
+                    const expandedContainer = document.createElement('div');
+                    expandedContainer.className = 'task-description-expanded collapsed';
+                    
+                    const expandedContent = document.createElement('div');
+                    expandedContent.className = 'task-description-content';
+                    
+                    // Add remaining description lines to expanded content (styled like preview)
+                    remainingLines.forEach(desc => {
+                        const descLine = document.createElement('div');
+                        descLine.className = 'description-line';
+                        descLine.textContent = desc;
+                        expandedContent.appendChild(descLine);
+                    });
+                    
+                    expandedContainer.appendChild(expandedContent);
+                    
+                    // Toggle functionality
+                    toggleBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        const isExpanded = expandedContainer.classList.contains('expanded');
+                        
+                        if (isExpanded) {
+                            expandedContainer.classList.remove('expanded');
+                            expandedContainer.classList.add('collapsed');
+                            toggleBtn.classList.remove('expanded');
+                            toggleBtn.setAttribute('aria-expanded', 'false');
+                        } else {
+                            expandedContainer.classList.remove('collapsed');
+                            expandedContainer.classList.add('expanded');
+                            toggleBtn.classList.add('expanded');
+                            toggleBtn.setAttribute('aria-expanded', 'true');
+                        }
+                    });
+                    
+                    // Add containers to card (preview first, then expanded content)
+                    card.appendChild(previewContainer);
+                    card.appendChild(expandedContainer);
+                } else {
+                    // Single line description - just show preview, no chevron
+                    card.appendChild(previewContainer);
+                }
+                
+                // Add text truncation functionality after DOM insertion
+                setTimeout(() => {
+                    const ellipsisIndicatorWidth = hasMultipleLines ? 20 : 0; // Account for our ellipsis indicator
+                    const maxWidth = previewContainer.offsetWidth - (hasMultipleLines ? toggleBtn.offsetWidth + ellipsisIndicatorWidth + 8 : 8);
+                    const textWidth = getTextWidth(firstLine, window.getComputedStyle(previewText));
+                    
+                    if (textWidth > maxWidth) {
+                        // For multiple lines, don't add "..." since we have the indicator
+                        if (hasMultipleLines) {
+                            // Truncate without adding "..."
+                            const truncatedText = truncateTextWithoutEllipsis(firstLine, maxWidth, window.getComputedStyle(previewText));
+                            previewText.textContent = truncatedText;
+                        } else {
+                            // For single lines, use normal truncation with "..."
+                            const truncatedText = truncateTextToFit(firstLine, maxWidth, window.getComputedStyle(previewText));
+                            previewText.textContent = truncatedText;
+                        
+                            // Add chevron for truncated single line
+                            previewContainer.appendChild(toggleBtn);
+                            toggleBtn.setAttribute('aria-label', 'Show full description');
+                            
+                            // Create expanded container for full text display
+                            const expandedContainer = document.createElement('div');
+                            expandedContainer.className = 'task-description-expanded collapsed';
+                            
+                            const expandedContent = document.createElement('div');
+                            expandedContent.className = 'task-description-content';
+                            
+                            const fullTextLine = document.createElement('div');
+                            fullTextLine.className = 'description-line';
+                            fullTextLine.textContent = firstLine;
+                            expandedContent.appendChild(fullTextLine);
+                            
+                            expandedContainer.appendChild(expandedContent);
+                            // Preview container already added to card, just add expanded container
+                            card.insertBefore(expandedContainer, card.querySelector('.subtask-container') || null);
+                            
+                            // Toggle functionality for single line expansion
+                            let isExpanded = false;
+                            toggleBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                
+                                if (isExpanded) {
+                                    expandedContainer.classList.remove('expanded');
+                                    expandedContainer.classList.add('collapsed');
+                                    toggleBtn.classList.remove('expanded');
+                                    toggleBtn.setAttribute('aria-expanded', 'false');
+                                } else {
+                                    expandedContainer.classList.remove('collapsed');
+                                    expandedContainer.classList.add('expanded');
+                                    toggleBtn.classList.add('expanded');
+                                    toggleBtn.setAttribute('aria-expanded', 'true');
+                                }
+                                isExpanded = !isExpanded;
+                            });
+                        }
+                    }
+                }, 0);
+            }
             
             // Add delete button and edit overlay (only in edit mode)
             if (isEditMode) {
@@ -4103,6 +4537,13 @@
                     
                     markdown += '\n';
                     
+                    // Add descriptions with "  > " prefix
+                    if (task.descriptions && task.descriptions.length > 0) {
+                        task.descriptions.forEach(desc => {
+                            markdown += `  > ${desc}\n`;
+                        });
+                    }
+                    
                     // Add subtasks
                     if (task.subtasks && task.subtasks.length > 0) {
                         task.subtasks.forEach(subtask => {
@@ -4327,6 +4768,10 @@
                     <input type="text" class="edit-keywords" placeholder="e.g. design, seo">
                 </div>
                 <div class="edit-section">
+                    <label>Description (one paragraph per line):</label>
+                    <textarea class="edit-description auto-resize-textarea" rows="2" placeholder="Enter task description details..."></textarea>
+                </div>
+                <div class="edit-section">
                     <label>Subtasks (one per line):</label>
                     <textarea class="edit-subtasks auto-resize-textarea" rows="2" placeholder="Enter subtasks, one per line"></textarea>
                 </div>
@@ -4363,6 +4808,14 @@
                 .map(k => k.replace(/^#+/, ''))
                 .join(', ');
             
+            // Populate description textarea (without "  > " markdown markings)
+            const descriptionTextarea = overlay.querySelector('.edit-description');
+            if (task.descriptions && task.descriptions.length > 0) {
+                descriptionTextarea.value = task.descriptions.join('\n');
+            } else {
+                descriptionTextarea.value = '';
+            }
+            
             // Populate subtasks textarea
             const subtasksTextarea = overlay.querySelector('.edit-subtasks');
             if (task.subtasks && task.subtasks.length > 0) {
@@ -4380,15 +4833,18 @@
             const previousOverflow = document.body.style.overflow;
             document.body.dataset.prevOverflow = previousOverflow || '';
             document.body.style.overflow = 'hidden';
-            // Now that overlay is visible, perform initial auto-resize for both fields
+            // Now that overlay is visible, perform initial auto-resize for all fields
             autoResizeElement(contentTextarea, 400);
+            autoResizeElement(descriptionTextarea, 400);
             autoResizeElement(subtasksTextarea, 600);
             // Run again on next frame and after paint to avoid tiny first height
             requestAnimationFrame(() => {
                 autoResizeElement(contentTextarea, 400);
+                autoResizeElement(descriptionTextarea, 400);
                 autoResizeElement(subtasksTextarea, 600);
                 setTimeout(() => {
                     autoResizeElement(contentTextarea, 400);
+                    autoResizeElement(descriptionTextarea, 400);
                     autoResizeElement(subtasksTextarea, 600);
                 }, 0);
             });
@@ -4412,6 +4868,14 @@
                         .map(k => (k.startsWith('#') ? k : `#${k.replace(/^#+/, '')}`))
                         .map(k => k.replace(/\s+/g, '-'))
                 ));
+                
+                // Process descriptions - convert textarea lines to description array
+                const descriptionsText = overlay.querySelector('.edit-description').value.trim();
+                const newDescriptions = descriptionsText ? 
+                    descriptionsText.split('\n')
+                        .map(line => line.trim())
+                        .filter(line => line.length > 0)
+                    : [];
                 
                 // Process subtasks - preserve existing subtask states when possible
                 const subtasksText = overlay.querySelector('.edit-subtasks').value.trim();
@@ -4455,6 +4919,14 @@
                     window.currentSections[columnName][taskIndex].title = newContent;
                     window.currentSections[columnName][taskIndex].priority = newPriority;
                     window.currentSections[columnName][taskIndex].keywords = newKeywords;
+                    
+                    // Update descriptions
+                    if (newDescriptions.length > 0) {
+                        window.currentSections[columnName][taskIndex].descriptions = newDescriptions;
+                    } else {
+                        // Remove descriptions if empty
+                        delete window.currentSections[columnName][taskIndex].descriptions;
+                    }
                     
                     // Update subtasks
                     if (newSubtasks.length > 0) {
@@ -4546,6 +5018,8 @@
                 setTimeout(() => autoResizeElement(contentTextarea, 400), 0);
             });
             contentInput.addEventListener('input', () => autoResizeElement(contentTextarea, 400));
+            // Description auto-resize while typing
+            descriptionTextarea.addEventListener('input', () => autoResizeElement(descriptionTextarea, 400));
             // Subtasks auto-resize while typing
             subtasksTextarea.addEventListener('input', () => autoResizeElement(subtasksTextarea, 600));
             priorityInput.addEventListener('keydown', inputKeyHandler);
@@ -4676,6 +5150,78 @@
             });
             
             return errors;
+        }
+        
+        // Helper functions for text measurement and truncation
+        function getTextWidth(text, style) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            context.font = `${style.fontSize} ${style.fontFamily}`;
+            return context.measureText(text).width;
+        }
+        
+        function truncateTextToFit(text, maxWidth, style) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            context.font = `${style.fontSize} ${style.fontFamily}`;
+            
+            const ellipsis = '...';
+            const ellipsisWidth = context.measureText(ellipsis).width;
+            const targetWidth = maxWidth - ellipsisWidth;
+            
+            if (context.measureText(text).width <= maxWidth) {
+                return text;
+            }
+            
+            // Binary search for optimal truncation point
+            let start = 0;
+            let end = text.length;
+            let bestFit = '';
+            
+            while (start <= end) {
+                const mid = Math.floor((start + end) / 2);
+                const candidate = text.substring(0, mid);
+                const candidateWidth = context.measureText(candidate).width;
+                
+                if (candidateWidth <= targetWidth) {
+                    bestFit = candidate;
+                    start = mid + 1;
+                } else {
+                    end = mid - 1;
+                }
+            }
+            
+            return bestFit + ellipsis;
+        }
+        
+        function truncateTextWithoutEllipsis(text, maxWidth, style) {
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            context.font = `${style.fontSize} ${style.fontFamily}`;
+            
+            if (context.measureText(text).width <= maxWidth) {
+                return text;
+            }
+            
+            // Binary search for optimal truncation point
+            let start = 0;
+            let end = text.length;
+            let bestFit = '';
+            
+            while (start <= end) {
+                const mid = Math.floor((start + end) / 2);
+                const candidate = text.substring(0, mid);
+                const candidateWidth = context.measureText(candidate).width;
+                
+                if (candidateWidth <= maxWidth) {
+                    bestFit = candidate;
+                    start = mid + 1;
+                } else {
+                    end = mid - 1;
+                }
+            }
+            
+            return bestFit;
         }
         
         function sanitizeTaskData(task) {
