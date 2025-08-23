@@ -5,6 +5,10 @@
   - [ ] Example subtask 2
   - [ ] Example subtask 3
 
+- Example task 2 - High
+  - Example subtask 1
+  - Example subtask 2
+
 ## **To-do**
 
 

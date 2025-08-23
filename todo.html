@@ -987,6 +987,11 @@
             display: flex;
             align-items: center;
         }
+        
+        /* Subtasks without checkboxes need less left padding */
+        .subtask:not(.has-checkbox) {
+            padding-left: 6px;
+        }
 
         .subtask-checkbox {
             position: absolute;
@@ -1005,7 +1010,6 @@
         }
 
         .subtask.completed .subtask-content {
-            text-decoration: line-through;
             opacity: 0.6;
         }
 
@@ -2939,12 +2943,15 @@
             
             // Check for checkbox syntax for subtasks
             let completed = false;
+            let hasCheckbox = false;
             if (isSubtask) {
                 if (title.startsWith('[x] ') || title.startsWith('[X] ')) {
                     completed = true;
+                    hasCheckbox = true;
                     title = title.substring(4);
                 } else if (title.startsWith('[ ] ')) {
                     completed = false;
+                    hasCheckbox = true;
                     title = title.substring(4);
                 }
             }
@@ -2976,9 +2983,10 @@
                 isSubtask
             };
             
-            // Add completed property for subtasks
+            // Add completed and hasCheckbox properties for subtasks
             if (isSubtask) {
                 result.completed = completed;
+                result.hasCheckbox = hasCheckbox;
             }
             
             return result;
@@ -3090,22 +3098,25 @@
                         subtaskDiv.classList.add('completed');
                     }
                     
-                    // Create checkbox
-                    const checkbox = document.createElement('input');
-                    checkbox.type = 'checkbox';
-                    checkbox.className = 'subtask-checkbox';
-                    checkbox.checked = subtask.completed || false;
-                    checkbox.addEventListener('change', (e) => {
-                        e.stopPropagation();
-                        toggleSubtaskCompletion(columnName, index, subtaskIndex, e.target.checked);
-                    });
+                    // Only create checkbox if subtask originally had checkbox syntax
+                    if (subtask.hasCheckbox) {
+                        subtaskDiv.classList.add('has-checkbox');
+                        const checkbox = document.createElement('input');
+                        checkbox.type = 'checkbox';
+                        checkbox.className = 'subtask-checkbox';
+                        checkbox.checked = subtask.completed || false;
+                        checkbox.addEventListener('change', (e) => {
+                            e.stopPropagation();
+                            toggleSubtaskCompletion(columnName, index, subtaskIndex, e.target.checked);
+                        });
+                        subtaskDiv.appendChild(checkbox);
+                    }
                     
                     // Create content wrapper
                     const contentSpan = document.createElement('span');
                     contentSpan.className = 'subtask-content';
                     contentSpan.textContent = subtask.title;
                     
-                    subtaskDiv.appendChild(checkbox);
                     subtaskDiv.appendChild(contentSpan);
                     
                     // Add edit mode functionality for subtasks
@@ -4094,8 +4105,12 @@
                     // Add subtasks
                     if (task.subtasks && task.subtasks.length > 0) {
                         task.subtasks.forEach(subtask => {
-                            const checkbox = subtask.completed ? '[x]' : '[ ]';
-                            markdown += `  - ${checkbox} ${subtask.title}\n`;
+                            if (subtask.hasCheckbox) {
+                                const checkbox = subtask.completed ? '[x]' : '[ ]';
+                                markdown += `  - ${checkbox} ${subtask.title}\n`;
+                            } else {
+                                markdown += `  - ${subtask.title}\n`;
+                            }
                         });
                     }
                 });
@@ -4350,6 +4365,7 @@
             // Populate subtasks textarea
             const subtasksTextarea = overlay.querySelector('.edit-subtasks');
             if (task.subtasks && task.subtasks.length > 0) {
+                // Show only clean titles in textarea (hide checkbox syntax for better UX)
                 subtasksTextarea.value = task.subtasks.map(subtask => subtask.title).join('\n');
             } else {
                 subtasksTextarea.value = '';
@@ -4396,13 +4412,41 @@
                         .map(k => k.replace(/\s+/g, '-'))
                 ));
                 
-                // Process subtasks
+                // Process subtasks - preserve existing subtask states when possible
                 const subtasksText = overlay.querySelector('.edit-subtasks').value.trim();
+                const existingSubtasks = task.subtasks || [];
+                const existingSubtaskMap = new Map();
+                
+                // Create a map of existing subtasks by title for quick lookup
+                existingSubtasks.forEach(subtask => {
+                    existingSubtaskMap.set(subtask.title, subtask);
+                });
+                
                 const newSubtasks = subtasksText ? 
                     subtasksText.split('\n')
                         .map(line => line.trim())
                         .filter(line => line.length > 0)
-                        .map(title => ({ title, isSubtask: true })) 
+                        .map(title => {
+                            // Check if this subtask already existed
+                            const existingSubtask = existingSubtaskMap.get(title);
+                            if (existingSubtask) {
+                                // Preserve existing subtask's checkbox state and completion status
+                                return {
+                                    title,
+                                    isSubtask: true,
+                                    hasCheckbox: existingSubtask.hasCheckbox,
+                                    completed: existingSubtask.completed
+                                };
+                            } else {
+                                // New subtask - default to having checkbox
+                                return {
+                                    title,
+                                    isSubtask: true,
+                                    hasCheckbox: true,
+                                    completed: false
+                                };
+                            }
+                        }) 
                     : [];
                 
                 if (newContent) {
@@ -4647,6 +4691,7 @@
             return {
                 title: (subtask.title || '').trim(),
                 completed: subtask.completed || false,
+                hasCheckbox: subtask.hasCheckbox || false,
                 isSubtask: true
             };
         }
@@ -4860,7 +4905,12 @@
                     
                     if (newContent.length > 0) {
                         if (!task.subtasks) task.subtasks = [];
-                        const newSubtask = sanitizeSubtaskData({ title: newContent, isSubtask: true });
+                        const newSubtask = sanitizeSubtaskData({ 
+                            title: newContent, 
+                            isSubtask: true,
+                            hasCheckbox: true,
+                            completed: false
+                        });
                         task.subtasks.push(newSubtask);
                         
                         renderKanbanBoard(window.currentSections);
