@@ -78,8 +78,9 @@ Start a local server to use the Kanban board. Here's how:
 
 By sticking to the following conventions, our To-do app will interpret and render the content. 
 
-- **Priority**: Add " - Urgent", " - High", " - Normal", or " - Low" at the end (don't forget the dash -)
-- **Keywords**: Use hashtags like at the end of a task title text `#project #urgent #meeting`
+- **Task Priority**: Add ' - Urgent', ' - High', ' - Normal', or ' - Low' at the end (don't forget the dash -)
+- **Task Keywords**: Use hashtags like at the end of a task name `#project #urgent #meeting`
+- **Task Description**: Add '  >' before description text. The description can be broken up into multiple lines by starting a new line with '  >'.
 - **Subtasks**: Start your indentation with 2 spaces for subtasks, e.g. `  - `
 
 ## About the Editing Mode
