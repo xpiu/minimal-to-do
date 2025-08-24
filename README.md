@@ -20,7 +20,7 @@ Start a local server to use the Kanban board. Here's how:
 
 ## Benefits
 
-- **2️⃣ Only two files**: todo.md and todo.html
+- **2️⃣ Only two files needed**: todo.md and todo.html
 - **🤖 AI-friendly**: AI loves the Markdown task format for task manipulation
 - **🍳 No installation**: Works in any browser
 - **💧 Drop-in simplicity**: Just drop the todo.md and todo.html files into a folder
