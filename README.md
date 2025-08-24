@@ -74,7 +74,9 @@ Start a local server to use the Kanban board. Here's how:
 - Firefox
 - Safari
 
-## Markdown conventions for items in todo.md
+## Storage in the todo.md Markdown file 
+
+### Markdown conventions for items in todo.md
 
 By sticking to the following conventions, our To-do app will interpret and render the content. 
 
@@ -82,6 +84,24 @@ By sticking to the following conventions, our To-do app will interpret and rende
 - **Task Keywords**: Use hashtags like at the end of a task name `#project #urgent #meeting`
 - **Task Description**: Add '  >' before description text. The description can be broken up into multiple lines by starting a new line with '  >'.
 - **Subtasks**: Start your indentation with 2 spaces for subtasks, e.g. `  - `
+
+### Example content for todo.md
+
+```Markdown
+## **Doing**
+
+- Example task 1 - Urgent #tag1 #tag2
+  > Example description line 1
+  > Example description line 2
+  - [x] Example subtask 1
+  - [ ] Example subtask 2
+
+## **To-do**
+
+## **Backlog**
+
+## **Done**
+```
 
 ## About the Editing Mode
 
