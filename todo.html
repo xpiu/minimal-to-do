@@ -1601,17 +1601,17 @@
             display: block;
         }
 
-        /* Hide task content when editing */
+        /* Dim task content when editing to show overlay is active */
         .task-card.editing .task-content {
-            visibility: hidden;
+            opacity: 0.3;
         }
 
         .task-card.editing .subtask {
-            visibility: hidden;
+            opacity: 0.3;
         }
 
         .task-card.editing .task-number {
-            visibility: hidden;
+            opacity: 0.3;
         }
 
         .task-card.editing .delete-task-btn {
@@ -1621,6 +1621,7 @@
         /* Editing state */
         .task-card.editing {
             position: relative;
+            z-index: 10000; /* above modal-backdrop (9999) but below task-edit-overlay (11000) */
         }
         
         /* Save notification - subtle in header */
