@@ -1,6 +1,6 @@
-# Minimal To-do - A task manager with Kanban board for an AI world
+# Minimal To-do - A task manager with Kanban board optimized for AI agent manipulation speed
 
-The most lightweight, standalone Kanban board To-do app with separate Markdown storage. A single HTML-file for the User Interface, and a single Markdown file for storage. For a world where AI needs access to our task list more than we do.
+The most lightweight, standalone Kanban board To-do app with Markdown storage. Unique value proposition: both AI agents and humans will intuitively understand the Markdown tasks and their formatting. Two files only: a single HTML-file for the User Interface, and a single Markdown file for storage. AI agents encountering these two files will immediately know how do work with them and manipulate the tasks efficiently.
 
 ## Screenshots
 
@@ -21,10 +21,10 @@ Start a local server to use the Kanban board. Here's how:
 ## Benefits
 
 - **2️⃣ Only two files**: todo.md and todo.html
+- **🤖 AI-friendly**: AI loves the Markdown task format for task manipulation
 - **🍳 No installation**: Works in any browser
 - **💧 Drop-in simplicity**: Just drop the todo.md and todo.html files into a folder
 - **🌐 Always available**: Lives with your project, accessible to any team member with browser access
-- **🤖 AI-friendly**: Markdown format works perfectly with AI tools and version control
 - **🪶 Lightweight alternative**: Much simpler than heavy project management tools or complex todo apps
 - **🔧 No dependencies**
 - **📜 Open source**: MIT license for complete freedom
