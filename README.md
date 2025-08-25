@@ -82,7 +82,7 @@ By sticking to the following conventions, our To-do app will interpret and rende
 
 - **Task Priority**: Add ' - Urgent', ' - High', ' - Normal', or ' - Low' at the end (don't forget the dash -)
 - **Task Keywords**: Use hashtags like at the end of a task name `#project #urgent #meeting`
-- **Task Description**: Add '  >' before description text. The description can be broken up into multiple lines by starting a new line with '  >'.
+- **Task Description**: Add '  >' before description text. The description can be broken up into multiple lines by starting a new line with '  >'. Use '  >' alone (empty line) to create paragraph breaks.
 - **Subtasks**: Start your indentation with 2 spaces for subtasks, e.g. `  - `
 
 ### Example content for todo.md
@@ -93,6 +93,9 @@ By sticking to the following conventions, our To-do app will interpret and rende
 - Example task 1 - Urgent #tag1 #tag2
   > Example description line 1
   > Example description line 2
+  >
+  > This is a new paragraph after a paragraph break.
+  > It demonstrates multi-paragraph descriptions.
   - [x] Example subtask 1
   - [ ] Example subtask 2
 
