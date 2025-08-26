@@ -1023,6 +1023,10 @@
         .subtask-content {
             flex: 1;
             transition: all 0.2s ease;
+            word-wrap: break-word;
+            word-break: break-word;
+            overflow-wrap: break-word;
+            padding-right: 4px;
         }
 
         .subtask.completed .subtask-content {
@@ -2253,7 +2257,7 @@
             word-wrap: break-word;
             line-height: 1.3;
             margin-right: 4px;
-            max-height: 2.6em; /* Allow for 2 lines without aggressive clipping */
+            max-height: 1.3em; /* Show only one line when collapsed */
             overflow: hidden;
         }
 
@@ -3456,6 +3460,21 @@
                 
                 previewContainer.appendChild(previewText);
                 
+                // Add double-tap functionality to preview text for editing (only in edit mode)
+                if (isEditMode) {
+                    let lastTap = 0;
+                    previewText.addEventListener('click', (e) => {
+                        const currentTime = new Date().getTime();
+                        const tapLength = currentTime - lastTap;
+                        if (tapLength < 500 && tapLength > 0) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            openTaskEditOverlay(card, task, index, columnName);
+                        }
+                        lastTap = currentTime;
+                    });
+                }
+                
                 // Only add chevron if there are multiple description lines
                 if (hasMultipleLines) {
                     // Add ellipsis indicator for multiple lines (positioned first)
@@ -3472,6 +3491,14 @@
                     
                     const expandedContent = document.createElement('div');
                     expandedContent.className = 'task-description-content';
+                    
+                    // Add the full first line to expanded content (in case it was truncated in preview)
+                    if (firstLine !== '') {
+                        const firstDescLine = document.createElement('div');
+                        firstDescLine.className = 'description-line';
+                        firstDescLine.textContent = firstLine;
+                        expandedContent.appendChild(firstDescLine);
+                    }
                     
                     // Add remaining description lines to expanded content (styled like preview)
                     remainingLines.forEach(desc => {
@@ -3491,6 +3518,21 @@
                     
                     expandedContainer.appendChild(expandedContent);
                     
+                    // Add double-tap functionality for editing (only in edit mode)
+                    if (isEditMode) {
+                        let lastTap = 0;
+                        expandedContainer.addEventListener('click', (e) => {
+                            const currentTime = new Date().getTime();
+                            const tapLength = currentTime - lastTap;
+                            if (tapLength < 500 && tapLength > 0) {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                openTaskEditOverlay(card, task, index, columnName);
+                            }
+                            lastTap = currentTime;
+                        });
+                    }
+                    
                     // Toggle functionality
                     toggleBtn.addEventListener('click', (e) => {
                         e.preventDefault();
@@ -3503,11 +3545,13 @@
                             expandedContainer.classList.add('collapsed');
                             toggleBtn.classList.remove('expanded');
                             toggleBtn.setAttribute('aria-expanded', 'false');
+                            previewText.style.visibility = 'visible'; // Show preview text when collapsed
                         } else {
                             expandedContainer.classList.remove('collapsed');
                             expandedContainer.classList.add('expanded');
                             toggleBtn.classList.add('expanded');
                             toggleBtn.setAttribute('aria-expanded', 'true');
+                            previewText.style.visibility = 'hidden'; // Hide preview text when expanded
                         }
                     });
                     
@@ -3556,6 +3600,21 @@
                             // Preview container already added to card, just add expanded container
                             card.insertBefore(expandedContainer, card.querySelector('.subtask-container') || null);
                             
+                            // Add double-tap functionality for editing (only in edit mode)
+                            if (isEditMode) {
+                                let lastTap = 0;
+                                expandedContainer.addEventListener('click', (e) => {
+                                    const currentTime = new Date().getTime();
+                                    const tapLength = currentTime - lastTap;
+                                    if (tapLength < 500 && tapLength > 0) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        openTaskEditOverlay(card, task, index, columnName);
+                                    }
+                                    lastTap = currentTime;
+                                });
+                            }
+                            
                             // Toggle functionality for single line expansion
                             let isExpanded = false;
                             toggleBtn.addEventListener('click', (e) => {
@@ -3567,11 +3626,13 @@
                                     expandedContainer.classList.add('collapsed');
                                     toggleBtn.classList.remove('expanded');
                                     toggleBtn.setAttribute('aria-expanded', 'false');
+                                    previewText.style.visibility = 'visible'; // Show preview text when collapsed
                                 } else {
                                     expandedContainer.classList.remove('collapsed');
                                     expandedContainer.classList.add('expanded');
                                     toggleBtn.classList.add('expanded');
                                     toggleBtn.setAttribute('aria-expanded', 'true');
+                                    previewText.style.visibility = 'hidden'; // Hide preview text when expanded
                                 }
                                 isExpanded = !isExpanded;
                             });
