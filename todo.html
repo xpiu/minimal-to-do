@@ -2329,9 +2329,9 @@
             opacity: 1;
         }
 
-        /* Chevron rotation with bounce effect */
+        /* Chevron rotation - fast and simple */
         .task-description-toggle svg {
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: transform 0.1s ease;
             width: 10px;
             height: 10px;
         }
@@ -2341,7 +2341,7 @@
         }
 
 
-        /* Ellipsis indicator - smoothly hides when expanded with natural timing */
+        /* Ellipsis indicator - fast fade */
         .description-ellipsis-indicator {
             color: var(--text-muted);
             opacity: 0.6;
@@ -2349,9 +2349,7 @@
             margin-left: 2px;
             user-select: none;
             font-weight: 500;
-            /* Slower fade-out, faster fade-in for natural feel */
-            transition: opacity 0.4s cubic-bezier(0.4, 0.0, 0.2, 1), 
-                       transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transition: opacity 0.1s ease, transform 0.1s ease;
             transform: scale(1);
             transform-origin: left center;
         }
@@ -2368,28 +2366,27 @@
             pointer-events: none;
         }
 
-        /* Expanding state - immediate but gentle fade with slight delay */
+        /* Expanding state - instant fade */
         .description-ellipsis-indicator.expanding {
-            transition: opacity 0.15s ease-out, transform 0.2s ease-out;
+            transition: opacity 0.05s ease, transform 0.05s ease;
             opacity: 0;
             transform: scale(0.95);
         }
 
-        /* Collapsing state - quick fade-in */  
+        /* Collapsing state - instant fade-in */  
         .description-ellipsis-indicator.collapsing {
-            transition: opacity 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0.15s, 
-                       transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+            transition: opacity 0.05s ease, transform 0.05s ease;
         }
 
         /* Additional lines container - natural expansion with staggered timing */
         .task-description-additional {
             margin-top: 2px;
             overflow: hidden;
-            /* Multi-property transitions with different timings for natural feel */
-            transition: max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                       opacity 0.3s cubic-bezier(0.4, 0.0, 0.2, 1) 0.05s,
-                       transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s,
-                       margin-top 0.3s ease-out 0.1s;
+            /* Fast expansion with no delays */
+            transition: max-height 0.15s ease,
+                       opacity 0.1s ease,
+                       transform 0.1s ease,
+                       margin-top 0.1s ease;
             transform-origin: top left;
             padding: 0;
             border-radius: 3px;
@@ -2409,20 +2406,20 @@
             transform: translateY(0) scaleY(1);
         }
 
-        /* Expanding state - immediate height change, staggered opacity/transform */
+        /* Expanding state - fast with no delays */
         .task-description-additional.expanding {
-            transition: max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                       opacity 0.25s ease-out 0.1s,
-                       transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s,
-                       margin-top 0.25s ease-out;
+            transition: max-height 0.15s ease,
+                       opacity 0.1s ease,
+                       transform 0.1s ease,
+                       margin-top 0.1s ease;
         }
 
-        /* Collapsing state - faster, synchronized timing */
+        /* Collapsing state - fast and synchronized */
         .task-description-additional.collapsing {
-            transition: max-height 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.1s,
-                       opacity 0.2s ease-in,
-                       transform 0.25s ease-in 0.05s,
-                       margin-top 0.25s ease-in 0.05s;
+            transition: max-height 0.1s ease,
+                       opacity 0.05s ease,
+                       transform 0.05s ease,
+                       margin-top 0.05s ease;
         }
 
         .task-description-additional-content {
@@ -2440,8 +2437,8 @@
             background: transparent;
             border-left: none;
             padding-left: 0;
-            /* Subtle content fade-in effect during expansion */
-            transition: opacity 0.25s ease-out 0.2s, transform 0.3s ease-out 0.15s;
+            /* Fast content appearance */
+            transition: opacity 0.1s ease, transform 0.1s ease;
             transform: translateY(0);
         }
 
@@ -2449,11 +2446,11 @@
         .task-description-additional.collapsed .task-description-additional-content {
             opacity: 0;
             transform: translateY(-2px);
-            transition: opacity 0.15s ease-in, transform 0.2s ease-in;
+            transition: opacity 0.05s ease, transform 0.05s ease;
         }
 
         .task-description-additional.expanding .task-description-additional-content {
-            transition: opacity 0.3s ease-out 0.25s, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
+            transition: opacity 0.1s ease, transform 0.1s ease;
         }
 
 

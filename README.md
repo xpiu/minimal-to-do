@@ -43,9 +43,10 @@ Start a local server to use the Kanban board. Here's how:
 
 ## How to Use
 
-### **OPTION 1**: Use the Kanban board in your browser using todo.html AND/OR the todo.md file simultaneously.
+### **1. Recommended way**: Use the Kanban board in your browser with a local serve instance
 
 1. **Start a quick, disposable local server to use the Kanban board**:
+   
    ```bash
    # Python 3 (recommended)
    python3 -m http.server 8000
@@ -60,7 +61,9 @@ Start a local server to use the Kanban board. Here's how:
 
 3. **Enable Editing Mode** (OPTIONAL): Click "Enable Editing Mode" to unlock full task management features
 
-### **OPTION 2**: Use the todo.md file to list tasks. Ignore or delete the Kanban board todo.html file.
+### **2. Quicker way**: Just open the todo.html file and manually select the todo.md file inside the app. 
+
+### **3. Quickest way**: Ignore todo.html and just write your tasks in the todo.md Markdown file.
 
 ## Browser Compatibility
 
