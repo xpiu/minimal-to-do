@@ -12,15 +12,17 @@ The most lightweight, standalone Kanban board To-do app with Markdown storage. U
 
 ### **1. Recommended way**
 
-Use the Kanban board in your browser with a local serve instance
+Use todo.html in your browser with a temporary local server instance.
 
-1. **Start a quick, disposable local server to use the Kanban board**:
+1. **Start a quick, disposable local server with your preferred terminal/shell app**:
    
    ```bash
-   # Python 3 (recommended)
    python3 -m http.server 8000
-   
-   # Alternative commands
+   ```
+
+   or one of these alternative commands
+
+   ```bash
    python -m http.server 8000          # If python3 doesn't work
    npx http-server -p 8000            # Node.js (note the -p 8000 flag)
    php -S localhost:8000              # PHP built-in server
@@ -28,7 +30,7 @@ Use the Kanban board in your browser with a local serve instance
 
 2. **Open in browser**: Go to `http://localhost:8000/todo.html`
 
-3. **Enable Editing Mode** (OPTIONAL): Click "Enable Editing Mode" to unlock full task management features
+3. **Enable Editing Mode** (OPTIONAL): Click "Enable Editing Mode" and select todo.md to store your data.
 
 ### **2. Quicker way**
 
