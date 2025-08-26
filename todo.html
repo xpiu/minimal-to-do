@@ -2232,37 +2232,63 @@
         }
         
         /* ==============================================
-           TASK DESCRIPTION PREVIEW + EXPAND STYLES
+           TASK DESCRIPTION UNIFIED ARCHITECTURE
            ============================================== */
 
-        /* Preview area - positioned between title and subtasks */
-        .task-description-preview {
-            display: flex;
-            align-items: flex-start;
+        /* Main container - unified approach for all description content */
+        .task-description-container {
             margin: 4px 0;
             padding: 2px 0;
             min-height: 16px;
             font-size: 11px;
             line-height: 1.3;
-            gap: 12px;
+            position: relative;
         }
 
-        .description-preview-text {
+        /* First line container - always visible, stays in place */
+        .task-description-line {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            position: relative;
+        }
+
+        .description-line-text {
             flex: 1;
             color: var(--text-muted);
             opacity: 0.8;
-            white-space: normal;
             font-weight: 400;
             letter-spacing: 0.01em;
             word-wrap: break-word;
             line-height: 1.3;
             margin-right: 4px;
-            max-height: 1.3em; /* Show only one line when collapsed */
+            transition: opacity 0.2s ease;
+            /* Default state: show truncated text */
+            white-space: nowrap;
             overflow: hidden;
+            text-overflow: ellipsis;
+            max-height: 1.3em;
+        }
+
+        /* When expanded, show full text without truncation - correct selector order */
+        .task-description-line:has(+ .task-description-additional.expanded) .description-line-text,
+        .task-description-line:has(+ .task-description-additional.expanding) .description-line-text {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            max-height: none;
+        }
+
+        /* Fallback for browsers that don't support :has() */
+        .task-description-container.expanded .description-line-text {
+            white-space: normal;
+            overflow: visible;
+            text-overflow: clip;
+            max-height: none;
         }
 
         /* Enhanced readability on hover */
-        .task-card:hover .description-preview-text {
+        .task-card:hover .description-line-text {
             opacity: 1;
             color: color-mix(in srgb, var(--text-muted) 80%, var(--text-color) 20%);
         }
@@ -2314,30 +2340,8 @@
             transform: rotate(180deg) scale(1.1);
         }
 
-        /* Expanded content container */
-        .task-description-expanded {
-            margin: 2px 0 0px 0;
-            overflow: hidden;
-            transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            transform-origin: top;
-            padding: 1px 0;
-            border-radius: 3px;
-        }
 
-        .task-description-expanded.collapsed {
-            max-height: 0;
-            opacity: 0;
-            margin: 0;
-            transform: translateY(-2px) scaleY(0.95);
-        }
-
-        .task-description-expanded.expanded {
-            max-height: 160px;
-            opacity: 1;
-            transform: translateY(0) scaleY(1);
-        }
-
-        /* Ellipsis indicator for multiple description lines */
+        /* Ellipsis indicator - smoothly hides when expanded with natural timing */
         .description-ellipsis-indicator {
             color: var(--text-muted);
             opacity: 0.6;
@@ -2345,11 +2349,113 @@
             margin-left: 2px;
             user-select: none;
             font-weight: 500;
+            /* Slower fade-out, faster fade-in for natural feel */
+            transition: opacity 0.4s cubic-bezier(0.4, 0.0, 0.2, 1), 
+                       transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            transform: scale(1);
+            transform-origin: left center;
         }
 
         .task-card:hover .description-ellipsis-indicator {
             opacity: 0.8;
+            transform: scale(1.05);
         }
+
+        /* Hidden state when expanded - gentle scale with bounce */
+        .description-ellipsis-indicator.hidden {
+            opacity: 0;
+            transform: scale(0.92);
+            pointer-events: none;
+        }
+
+        /* Expanding state - immediate but gentle fade with slight delay */
+        .description-ellipsis-indicator.expanding {
+            transition: opacity 0.15s ease-out, transform 0.2s ease-out;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+
+        /* Collapsing state - quick fade-in */  
+        .description-ellipsis-indicator.collapsing {
+            transition: opacity 0.2s cubic-bezier(0.0, 0.0, 0.2, 1) 0.15s, 
+                       transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s;
+        }
+
+        /* Additional lines container - natural expansion with staggered timing */
+        .task-description-additional {
+            margin-top: 2px;
+            overflow: hidden;
+            /* Multi-property transitions with different timings for natural feel */
+            transition: max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                       opacity 0.3s cubic-bezier(0.4, 0.0, 0.2, 1) 0.05s,
+                       transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.08s,
+                       margin-top 0.3s ease-out 0.1s;
+            transform-origin: top left;
+            padding: 0;
+            border-radius: 3px;
+            will-change: max-height, opacity, transform;
+        }
+
+        .task-description-additional.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin-top: 0;
+            transform: translateY(-3px) scaleY(0.94);
+        }
+
+        .task-description-additional.expanded {
+            max-height: 140px;
+            opacity: 1;
+            transform: translateY(0) scaleY(1);
+        }
+
+        /* Expanding state - immediate height change, staggered opacity/transform */
+        .task-description-additional.expanding {
+            transition: max-height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                       opacity 0.25s ease-out 0.1s,
+                       transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) 0.15s,
+                       margin-top 0.25s ease-out;
+        }
+
+        /* Collapsing state - faster, synchronized timing */
+        .task-description-additional.collapsing {
+            transition: max-height 0.3s cubic-bezier(0.55, 0.055, 0.675, 0.19) 0.1s,
+                       opacity 0.2s ease-in,
+                       transform 0.25s ease-in 0.05s,
+                       margin-top 0.25s ease-in 0.05s;
+        }
+
+        .task-description-additional-content {
+            padding: 2px 0 4px 0;
+            margin-bottom: 2px;
+            position: relative;
+            color: var(--text-muted);
+            opacity: 1; /* Remove opacity to avoid double application */
+            font-size: 11px;
+            line-height: 1.3;
+            word-wrap: break-word;
+            font-weight: 400;
+            letter-spacing: 0.01em;
+            /* Remove background and border for inline alignment */
+            background: transparent;
+            border-left: none;
+            padding-left: 0;
+            /* Subtle content fade-in effect during expansion */
+            transition: opacity 0.25s ease-out 0.2s, transform 0.3s ease-out 0.15s;
+            transform: translateY(0);
+        }
+
+        /* Content animation states */
+        .task-description-additional.collapsed .task-description-additional-content {
+            opacity: 0;
+            transform: translateY(-2px);
+            transition: opacity 0.15s ease-in, transform 0.2s ease-in;
+        }
+
+        .task-description-additional.expanding .task-description-additional-content {
+            transition: opacity 0.3s ease-out 0.25s, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s;
+        }
+
 
         /* Description content styling - for expanded content */
         .task-description-content {
@@ -2359,7 +2465,7 @@
             line-height: 1.4;
         }
 
-        /* Individual description lines - styled like preview text */
+        /* Individual description lines - styled exactly like preview text */
         .description-line {
             font-size: 11px;
             line-height: 1.3;
@@ -2370,6 +2476,9 @@
             margin: 0;
             padding: 1px 0;
             word-wrap: break-word;
+            /* Ensure alignment with first line */
+            text-indent: 0;
+            margin-left: 0;
         }
         
         /* Paragraph break styling - creates natural empty line whitespace */
@@ -2381,7 +2490,7 @@
             background: transparent;
         }
 
-        /* Enhanced readability on hover */
+        /* Enhanced readability on hover - match first line styling exactly */
         .task-card:hover .description-line {
             opacity: 1;
             color: color-mix(in srgb, var(--text-muted) 80%, var(--text-color) 20%);
@@ -2432,20 +2541,34 @@
             }
         }
 
-        /* Reduced motion support */
+        /* Reduced motion support - disable all animations while preserving states */
         @media (prefers-reduced-motion: reduce) {
             .task-description-toggle svg,
             .task-description-expanded,
-            .task-description-content {
-                transition: none;
-                animation: none;
+            .task-description-content,
+            .task-description-additional,
+            .task-description-additional.expanding,
+            .task-description-additional.collapsing,
+            .description-ellipsis-indicator,
+            .description-ellipsis-indicator.expanding,
+            .description-ellipsis-indicator.collapsing {
+                transition: none !important;
+                animation: none !important;
             }
             
             .task-description-toggle.expanded svg {
                 transform: rotate(180deg);
             }
             
-            .task-description-expanded.collapsed {
+            .task-description-expanded.collapsed,
+            .task-description-additional.collapsed {
+                transform: none;
+            }
+            
+            /* Ensure immediate state changes without transitions */
+            .description-ellipsis-indicator.hidden,
+            .description-ellipsis-indicator.expanding {
+                opacity: 0;
                 transform: none;
             }
         }
@@ -2459,7 +2582,7 @@
 
         /* Responsive considerations */
         @media (max-width: 768px) {
-            .task-description-preview {
+            .task-description-container {
                 font-size: 10px;
                 margin: 2px 0;
             }
@@ -2469,7 +2592,7 @@
                 padding: 0.5px 0;
             }
             
-            .task-description-content {
+            .task-description-additional-content {
                 font-size: 10px;
                 padding: 4px 6px 4px 8px;
                 line-height: 1.3;
@@ -2485,18 +2608,18 @@
                 height: 9px;
             }
             
-            .task-card.has-description.has-subtasks .task-description-expanded {
+            .task-card.has-description.has-subtasks .task-description-additional {
                 margin-bottom: 4px;
             }
             
-            .task-card.has-description.has-subtasks .task-description-preview {
+            .task-card.has-description.has-subtasks .task-description-container {
                 margin-bottom: 3px;
             }
         }
 
         /* Print styles - expand all descriptions */
         @media print {
-            .task-description-expanded.collapsed {
+            .task-description-additional.collapsed {
                 max-height: none;
                 opacity: 1;
                 margin: 2px 0 4px 0;
@@ -2507,7 +2630,11 @@
                 display: none;
             }
             
-            .description-preview-text {
+            .description-ellipsis-indicator {
+                display: none;
+            }
+            
+            .description-line-text {
                 white-space: normal;
                 overflow: visible;
                 text-overflow: clip;
@@ -3432,19 +3559,23 @@
                 const hasMultipleLines = task.descriptions.length > 1;
                 const remainingLines = task.descriptions.slice(1);
                 
-                // Create preview container (positioned below title, above subtasks)
-                const previewContainer = document.createElement('div');
-                previewContainer.className = 'task-description-preview';
+                // Create unified container (positioned below title, above subtasks)
+                const descriptionContainer = document.createElement('div');
+                descriptionContainer.className = 'task-description-container';
                 
-                const previewText = document.createElement('span');
-                previewText.className = 'description-preview-text';
+                // Create first line container
+                const lineContainer = document.createElement('div');
+                lineContainer.className = 'task-description-line';
+                
+                const lineText = document.createElement('span');
+                lineText.className = 'description-line-text';
                 
                 if (firstLine === '') {
                     // First line is empty (paragraph break)
-                    previewText.classList.add('paragraph-break-preview');
-                    previewText.innerHTML = '&nbsp;'; // Non-breaking space to maintain height
+                    lineText.classList.add('paragraph-break-preview');
+                    lineText.innerHTML = '&nbsp;'; // Non-breaking space to maintain height
                 } else {
-                    previewText.textContent = firstLine;
+                    lineText.textContent = firstLine;
                 }
                 
                 // Create chevron toggle button (only if multiple lines or if truncation needed)
@@ -3458,12 +3589,12 @@
                     </svg>
                 `;
                 
-                previewContainer.appendChild(previewText);
+                lineContainer.appendChild(lineText);
                 
-                // Add double-tap functionality to preview text for editing (only in edit mode)
+                // Add double-tap functionality to line text for editing (only in edit mode)
                 if (isEditMode) {
                     let lastTap = 0;
-                    previewText.addEventListener('click', (e) => {
+                    lineText.addEventListener('click', (e) => {
                         const currentTime = new Date().getTime();
                         const tapLength = currentTime - lastTap;
                         if (tapLength < 500 && tapLength > 0) {
@@ -3477,30 +3608,22 @@
                 
                 // Only add chevron if there are multiple description lines
                 if (hasMultipleLines) {
-                    // Add ellipsis indicator for multiple lines (positioned first)
+                    // Add ellipsis indicator for multiple lines
                     const ellipsisIndicator = document.createElement('span');
                     ellipsisIndicator.className = 'description-ellipsis-indicator';
                     ellipsisIndicator.textContent = '...';
-                    previewContainer.appendChild(ellipsisIndicator);
+                    lineContainer.appendChild(ellipsisIndicator);
                     
-                    previewContainer.appendChild(toggleBtn);
+                    lineContainer.appendChild(toggleBtn);
                     
-                    // Create expanded content container (for remaining lines)
-                    const expandedContainer = document.createElement('div');
-                    expandedContainer.className = 'task-description-expanded collapsed';
+                    // Create additional lines container (for remaining lines)
+                    const additionalContainer = document.createElement('div');
+                    additionalContainer.className = 'task-description-additional collapsed';
                     
-                    const expandedContent = document.createElement('div');
-                    expandedContent.className = 'task-description-content';
+                    const additionalContent = document.createElement('div');
+                    additionalContent.className = 'task-description-additional-content';
                     
-                    // Add the full first line to expanded content (in case it was truncated in preview)
-                    if (firstLine !== '') {
-                        const firstDescLine = document.createElement('div');
-                        firstDescLine.className = 'description-line';
-                        firstDescLine.textContent = firstLine;
-                        expandedContent.appendChild(firstDescLine);
-                    }
-                    
-                    // Add remaining description lines to expanded content (styled like preview)
+                    // Add only remaining description lines (first line stays in place)
                     remainingLines.forEach(desc => {
                         const descLine = document.createElement('div');
                         descLine.className = 'description-line';
@@ -3513,15 +3636,15 @@
                             descLine.textContent = desc;
                         }
                         
-                        expandedContent.appendChild(descLine);
+                        additionalContent.appendChild(descLine);
                     });
                     
-                    expandedContainer.appendChild(expandedContent);
+                    additionalContainer.appendChild(additionalContent);
                     
                     // Add double-tap functionality for editing (only in edit mode)
                     if (isEditMode) {
                         let lastTap = 0;
-                        expandedContainer.addEventListener('click', (e) => {
+                        additionalContainer.addEventListener('click', (e) => {
                             const currentTime = new Date().getTime();
                             const tapLength = currentTime - lastTap;
                             if (tapLength < 500 && tapLength > 0) {
@@ -3533,41 +3656,73 @@
                         });
                     }
                     
-                    // Toggle functionality
+                    // Toggle functionality with improved smoothness
                     toggleBtn.addEventListener('click', (e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         
-                        const isExpanded = expandedContainer.classList.contains('expanded');
+                        const isExpanded = additionalContainer.classList.contains('expanded');
                         
                         if (isExpanded) {
-                            expandedContainer.classList.remove('expanded');
-                            expandedContainer.classList.add('collapsed');
+                            // Collapsing - coordinated timing for natural feel
+                            additionalContainer.classList.remove('expanded', 'expanding');
+                            additionalContainer.classList.add('collapsing');
                             toggleBtn.classList.remove('expanded');
                             toggleBtn.setAttribute('aria-expanded', 'false');
-                            previewText.style.visibility = 'visible'; // Show preview text when collapsed
+                            // Remove expanded state from container for CSS selectors
+                            descriptionContainer.classList.remove('expanded');
+                            
+                            // Start ellipsis fade-in immediately with collapsing class
+                            ellipsisIndicator.classList.remove('hidden', 'expanding');
+                            ellipsisIndicator.classList.add('collapsing');
+                            
+                            // After brief delay, complete the collapse
+                            setTimeout(() => {
+                                additionalContainer.classList.remove('collapsing');
+                                additionalContainer.classList.add('collapsed');
+                                ellipsisIndicator.classList.remove('collapsing');
+                            }, 50);
+                            
                         } else {
-                            expandedContainer.classList.remove('collapsed');
-                            expandedContainer.classList.add('expanded');
-                            toggleBtn.classList.add('expanded');
-                            toggleBtn.setAttribute('aria-expanded', 'true');
-                            previewText.style.visibility = 'hidden'; // Hide preview text when expanded
+                            // Expanding - ellipsis fades out immediately, content follows
+                            ellipsisIndicator.classList.remove('collapsing');
+                            ellipsisIndicator.classList.add('expanding');
+                            
+                            // Start content expansion with slight delay for natural stagger
+                            setTimeout(() => {
+                                additionalContainer.classList.remove('collapsed', 'collapsing');
+                                additionalContainer.classList.add('expanding');
+                                toggleBtn.classList.add('expanded');
+                                toggleBtn.setAttribute('aria-expanded', 'true');
+                                // Add expanded state to container for CSS selectors
+                                descriptionContainer.classList.add('expanded');
+                            }, 30);
+                            
+                            // Complete the expansion state after animations
+                            setTimeout(() => {
+                                additionalContainer.classList.remove('expanding');
+                                additionalContainer.classList.add('expanded');
+                                ellipsisIndicator.classList.remove('expanding');
+                                ellipsisIndicator.classList.add('hidden');
+                            }, 200);
                         }
                     });
                     
-                    // Add containers to card (preview first, then expanded content)
-                    card.appendChild(previewContainer);
-                    card.appendChild(expandedContainer);
+                    // Add containers to main description container
+                    descriptionContainer.appendChild(lineContainer);
+                    descriptionContainer.appendChild(additionalContainer);
+                    card.appendChild(descriptionContainer);
                 } else {
-                    // Single line description - just show preview, no chevron
-                    card.appendChild(previewContainer);
+                    // Single line description - just show line container, no chevron
+                    descriptionContainer.appendChild(lineContainer);
+                    card.appendChild(descriptionContainer);
                 }
                 
                 // Add text truncation functionality after DOM insertion
                 setTimeout(() => {
                     const ellipsisIndicatorWidth = hasMultipleLines ? 20 : 0; // Account for our ellipsis indicator
-                    const maxWidth = previewContainer.offsetWidth - (hasMultipleLines ? toggleBtn.offsetWidth + ellipsisIndicatorWidth + 8 : 8);
-                    const textWidth = getTextWidth(firstLine, window.getComputedStyle(previewText));
+                    const maxWidth = lineContainer.offsetWidth - (hasMultipleLines ? toggleBtn.offsetWidth + ellipsisIndicatorWidth + 8 : 8);
+                    const textWidth = getTextWidth(firstLine, window.getComputedStyle(lineText));
                     
                     if (false) { // Disabled: Let CSS handle text flow naturally
                         // For multiple lines, don't add "..." since we have the indicator
@@ -3615,27 +3770,7 @@
                                 });
                             }
                             
-                            // Toggle functionality for single line expansion
-                            let isExpanded = false;
-                            toggleBtn.addEventListener('click', (e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                
-                                if (isExpanded) {
-                                    expandedContainer.classList.remove('expanded');
-                                    expandedContainer.classList.add('collapsed');
-                                    toggleBtn.classList.remove('expanded');
-                                    toggleBtn.setAttribute('aria-expanded', 'false');
-                                    previewText.style.visibility = 'visible'; // Show preview text when collapsed
-                                } else {
-                                    expandedContainer.classList.remove('collapsed');
-                                    expandedContainer.classList.add('expanded');
-                                    toggleBtn.classList.add('expanded');
-                                    toggleBtn.setAttribute('aria-expanded', 'true');
-                                    previewText.style.visibility = 'hidden'; // Hide preview text when expanded
-                                }
-                                isExpanded = !isExpanded;
-                            });
+                            // Note: Toggle functionality is handled by the unified system above
                         }
                     }
                 }, 0);
