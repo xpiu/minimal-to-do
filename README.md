@@ -8,15 +8,35 @@ The most lightweight, standalone Kanban board To-do app with Markdown storage. U
 
 ![Kanban board UI - Dark Mode](screenshot2.png)
 
-## Quick Start
+## How to Use (3 ways)
 
-Start a local server to use the Kanban board. Here's how:
+### **1. Recommended way**
 
-1. **Open a Terminal/Command Prompt** and navigate to the folder containing your files
-2. **Run:** `python3 -m http.server 8000` in the folder containing your files
-3. **Visit:** [http://localhost:8000/todo.html](http://localhost:8000/todo.html)
+Use the Kanban board in your browser with a local serve instance
 
-*Don't just double-click the HTML file - it won't work! You need to run a temporary server instance to use the todo.md file for storage.*
+1. **Start a quick, disposable local server to use the Kanban board**:
+   
+   ```bash
+   # Python 3 (recommended)
+   python3 -m http.server 8000
+   
+   # Alternative commands
+   python -m http.server 8000          # If python3 doesn't work
+   npx http-server -p 8000            # Node.js (note the -p 8000 flag)
+   php -S localhost:8000              # PHP built-in server
+   ```
+
+2. **Open in browser**: Go to `http://localhost:8000/todo.html`
+
+3. **Enable Editing Mode** (OPTIONAL): Click "Enable Editing Mode" to unlock full task management features
+
+### **2. Quicker way**
+
+Open the todo.html file with a browser and manually select the todo.md file inside the app. 
+
+### **3. Quickest way**
+
+Ignore the todo.html file and write your tasks in the todo.md file in Markdown format
 
 ## Benefits
 
@@ -40,30 +60,6 @@ Start a local server to use the Kanban board. Here's how:
 - **📱 Responsive Design**: Works on desktop and mobile devices
 - **💾 Auto-save**: Changes are automatically saved to your todo.md file
 - **🔧 No Installation**: Single HTML file - just open in your browser
-
-## How to Use
-
-### **1. Recommended way**: Use the Kanban board in your browser with a local serve instance
-
-1. **Start a quick, disposable local server to use the Kanban board**:
-   
-   ```bash
-   # Python 3 (recommended)
-   python3 -m http.server 8000
-   
-   # Alternative commands
-   python -m http.server 8000          # If python3 doesn't work
-   npx http-server -p 8000            # Node.js (note the -p 8000 flag)
-   php -S localhost:8000              # PHP built-in server
-   ```
-
-2. **Open in browser**: Go to `http://localhost:8000/todo.html`
-
-3. **Enable Editing Mode** (OPTIONAL): Click "Enable Editing Mode" to unlock full task management features
-
-### **2. Quicker way**: Just open the todo.html file and manually select the todo.md file inside the app. 
-
-### **3. Quickest way**: Ignore todo.html and just write your tasks in the todo.md Markdown file.
 
 ## Browser Compatibility
 
