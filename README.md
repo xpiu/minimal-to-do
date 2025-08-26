@@ -38,7 +38,7 @@ Open the todo.html file with a browser and manually select the todo.md file insi
 
 ### **3. Quickest way**
 
-Ignore the todo.html file and write your tasks in the todo.md file in Markdown format
+Ignore the todo.html file and write your tasks in the todo.md file in Markdown format.
 
 ## Benefits
 
