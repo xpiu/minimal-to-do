@@ -1069,82 +1069,211 @@
             text-align: center;
         }
 
-        /* Setup Guide Styles - Matches app's design language */
-        .setup-guide {
-            max-width: 600px;
+        /* Setup Warning Styles - Redesigned to match app's design language */
+        .setup-warning {
+            max-width: 640px;
             margin: 24px auto;
-            padding: 24px;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
             border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .setup-header {
             text-align: center;
+            padding: 24px 24px 16px 24px;
+            background: var(--focus-primary-alpha);
+            border-bottom: 1px solid var(--focus-primary);
         }
 
         .setup-icon {
-            font-size: 32px;
-            margin-bottom: 16px;
+            font-size: 24px;
+            margin-bottom: 8px;
             opacity: 0.9;
+            color: #ff8800;
         }
 
-        .setup-guide h2 {
+        .setup-header h2 {
             color: var(--header-text);
             font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 12px;
+            font-weight: 600;
+            margin: 0 0 4px 0;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .setup-intro {
-            color: var(--text-color);
-            font-size: 14px;
+        .setup-summary {
+            color: var(--text-muted);
+            font-size: 13px;
             line-height: 1.4;
+            margin: 0;
+        }
+
+        .setup-content {
+            padding: 24px;
+        }
+
+        .setup-section {
             margin-bottom: 24px;
         }
 
-        .setup-steps {
-            margin-bottom: 24px;
+        .setup-section:last-child {
+            margin-bottom: 0;
         }
 
-        .step {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
-        .step-number {
-            background: var(--focus-primary);
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 12px;
-            margin-right: 12px;
-            flex-shrink: 0;
-        }
-
-        .step-content h3 {
+        .setup-section h3 {
             color: var(--header-text);
             font-size: 12px;
             font-weight: 700;
-            margin-bottom: 4px;
+            margin: 0 0 12px 0;
             text-transform: uppercase;
             letter-spacing: 0.3px;
         }
 
-        .step-content p {
-            color: var(--text-color);
+        .setup-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .step-marker {
+            background: var(--focus-primary);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 11px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .step-details {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .step-title {
+            color: var(--header-text);
             font-size: 13px;
-            line-height: 1.3;
+            font-weight: 600;
+        }
+
+        .step-desc {
+            color: var(--text-color);
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .command-container {
+            background: var(--code-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 4px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .command-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .action-btn {
+            background: var(--button-bg);
+            border: 1px solid var(--button-border);
+            color: var(--text-color);
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            font-family: inherit;
+            transition: all 0.15s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            height: 24px;
+            min-width: 24px;
+        }
+
+        .action-btn:hover {
+            background: var(--button-hover);
+        }
+
+        .action-btn.copy-command {
+            padding: 4px;
+        }
+
+        .action-btn.copy-command svg {
+            stroke-width: 1.8;
+        }
+
+        .action-btn.primary {
+            background: var(--focus-primary);
+            border-color: var(--focus-primary);
+            color: white;
+            font-weight: 600;
+            padding: 8px 16px;
+            height: auto;
+        }
+
+        .action-btn.primary:hover {
+            background: #339933;
+            border-color: #339933;
+        }
+
+        .setup-link {
+            color: var(--focus-secondary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .setup-link:hover {
+            color: var(--link-hover);
+            text-decoration: underline;
+        }
+
+        .setup-info {
+            background: var(--focus-secondary-alpha);
+            border-left: 3px solid var(--focus-secondary);
+            padding: 12px 16px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .setup-info p {
+            color: var(--text-color);
+            font-size: 12px;
+            line-height: 1.4;
             margin: 0;
         }
 
-        .command-box {
+        .setup-alternatives h3 {
+            margin-bottom: 8px;
+        }
+
+        .alt-command-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alt-command {
             background: var(--code-bg);
             border: 1px solid var(--card-border);
             border-radius: 3px;
@@ -1152,133 +1281,139 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-top: 6px;
+            gap: 12px;
         }
 
-        .command-box code {
+        .alt-command code {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
+            font-size: 11px;
             color: var(--text-color);
+            font-weight: 500;
         }
 
-        .copy-btn {
-            background: var(--button-bg);
-            border: 1px solid var(--button-border);
-            color: var(--text-color);
-            padding: 4px 8px;
-            border-radius: 3px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.15s ease;
-            min-width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .alt-desc {
+            color: var(--text-muted);
+            font-size: 10px;
+            font-style: italic;
+            text-align: right;
+            flex-shrink: 0;
         }
 
-        .copy-btn:hover {
-            background: var(--button-hover);
-            border-color: var(--focus-primary);
-        }
-
-        .setup-note {
-            background: var(--focus-primary-alpha);
-            border: 1px solid var(--focus-primary);
-            border-radius: 4px;
+        .setup-skip {
+            background: var(--column-bg);
+            border: 1px solid var(--column-border);
             padding: 16px;
-            margin-bottom: 20px;
-            text-align: left;
+            border-radius: 4px;
+            text-align: center;
         }
 
-        .setup-note p {
+        .setup-skip p {
             color: var(--text-color);
             font-size: 13px;
             line-height: 1.4;
-            margin: 0 0 6px 0;
+            margin: 0 0 12px 0;
         }
 
-        .setup-note p:last-child {
-            margin-bottom: 0;
-        }
-
-        .setup-note strong {
+        .setup-skip strong {
             color: var(--header-text);
             font-weight: 600;
         }
 
-        .setup-alternatives {
-            text-align: left;
+        /* Accessibility and focus management */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
 
-        .setup-alternatives p {
-            color: var(--text-color);
-            font-size: 13px;
-            margin-bottom: 8px;
-            font-weight: 600;
+        .setup-warning *:focus {
+            outline: 2px solid var(--focus-secondary);
+            outline-offset: 2px;
+            border-radius: 3px;
         }
 
-        .alt-commands {
-            background: var(--code-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 4px;
-            padding: 12px;
+        .setup-warning .action-btn:focus {
+            outline: 2px solid var(--focus-primary);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px var(--focus-primary-alpha);
         }
 
-        .alt-commands code {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: var(--text-color);
-            display: block;
-            margin-bottom: 6px;
+        .setup-warning .action-btn.primary:focus {
+            outline: 2px solid white;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px var(--focus-primary-glow);
         }
 
-        .alt-commands code:last-child {
-            margin-bottom: 0;
+        .alt-command code:focus {
+            outline: 2px solid var(--focus-secondary);
+            outline-offset: 2px;
+            background: var(--focus-secondary-alpha);
         }
 
-        .alt-label {
-            color: var(--text-muted);
-            font-size: 11px;
-            font-style: italic;
-        }
-
-        /* Mobile responsive improvements for setup guide */
+        /* Mobile responsive improvements for setup warning */
         @media (max-width: 768px) {
-            .setup-guide {
-                margin: 16px auto;
-                padding: 20px 16px;
-                max-width: 95%;
+            .setup-warning {
+                margin: 16px;
+                max-width: calc(100% - 32px);
             }
             
-            .setup-guide h2 {
+            .setup-header {
+                padding: 20px 16px 12px 16px;
+            }
+            
+            .setup-header h2 {
                 font-size: 14px;
             }
             
-            .setup-intro {
-                font-size: 13px;
+            .setup-summary {
+                font-size: 12px;
             }
             
-            .step {
+            .setup-content {
+                padding: 20px 16px;
+            }
+            
+            .step-item {
                 flex-direction: column;
+                gap: 8px;
                 text-align: center;
             }
             
-            .step-number {
-                margin: 0 auto 8px auto;
-            }
-            
-            .command-box {
-                flex-direction: column;
-                gap: 6px;
-            }
-            
-            .command-box code {
-                text-align: center;
-            }
-            
-            .copy-btn {
+            .step-marker {
                 align-self: center;
+            }
+            
+            .command-container {
+                flex-direction: column;
+                gap: 8px;
+                text-align: center;
+            }
+            
+            .alt-command {
+                flex-direction: column;
+                gap: 4px;
+                text-align: center;
+            }
+            
+            .alt-desc {
+                text-align: center;
+            }
+        }
+
+        /* Reduced motion support */
+        @media (prefers-reduced-motion: reduce) {
+            .action-btn {
+                transition: none;
+            }
+            
+            .setup-warning * {
+                transition: none;
             }
         }
 
@@ -4408,56 +4543,80 @@
                         throw new Error(`HTTP ${response.status}`);
                     }
                 } catch (fetchError) {
-                    console.log('ℹ️  Local server needed to load todo.md file');
+                    console.log('ℹ️  Local server recommended to load todo.md file');
                     console.log('ℹ️  Run: python3 -m http.server 8000');
                     console.log('ℹ️  Then open: http://localhost:8000/todo.html');
-                    document.getElementById('file-status').innerHTML = '<span style="color: #ff8800;">⚠️ Server needed - see instructions below</span>';
+                    document.getElementById('file-status').innerHTML = '<span style="color: #ff8800;">⚠️ Server recommended - see instructions below</span>';
                     
                     // Show user-friendly error message and stop execution
                     const board = document.getElementById('kanban-board');
-                    board.innerHTML = `<div class="setup-guide">
-                        <p class="setup-intro">To get started, you'll need to run a quick local server. This helps the app read your todo.md file properly.</p>
+                    board.innerHTML = `<div class="setup-warning" role="alert" aria-labelledby="setup-heading">
+                        <div class="setup-header">
+                            <h3 id="setup-heading">Local server instance recommended</h3>
+                            <p class="setup-summary">To enable all features, run a quick local server</p>
+                        </div>
                         
-                        <div class="setup-steps">
-                            <div class="step">
-                                <div class="step-number">1</div>
-                                <div class="step-content">
-                                    <h3>Open Terminal/Command Prompt</h3>
-                                    <p>Navigate to this folder where your todo.html file is located</p>
-                                </div>
-                            </div>
-                            
-                            <div class="step">
-                                <div class="step-number">2</div>
-                                <div class="step-content">
-                                    <h3>Run This Command</h3>
-                                    <div class="command-box">
-                                        <code>python3 -m http.server 8000</code>
-                                        <button class="copy-btn" onclick="copyToClipboard('python3 -m http.server 8000')">📋</button>
+                        <div class="setup-content">
+                            <div class="setup-section">
+                                <h3>Quick Setup (Recommended)</h3>
+                                <div class="setup-steps" role="list" aria-label="Setup steps">
+                                    <div class="step-item" role="listitem">
+                                        <div class="step-marker" aria-hidden="true">1</div>
+                                        <div class="step-details">
+                                            <span class="step-title">Open Terminal/Command Prompt</span>
+                                            <span class="step-desc">Navigate to this folder where your todo.html file is located</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="step-item" role="listitem">
+                                        <div class="step-marker" aria-hidden="true">2</div>
+                                        <div class="step-details">
+                                            <span class="step-title">Run a server command in your favorite terminal/shell</span>
+                                            <div class="command-container">
+                                                <code class="command-text" role="textbox" aria-readonly="true" aria-label="Server command">python3 -m http.server 8000</code>
+                                                <button class="action-btn copy-command" onclick="copyToClipboard('python3 -m http.server 8000')" type="button" aria-label="Copy command to clipboard" title="Copy command">
+                                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/></svg>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="step-item" role="listitem">
+                                        <div class="step-marker" aria-hidden="true">3</div>
+                                        <div class="step-details">
+                                            <span class="step-title">Open in Browser</span>
+                                            <span class="step-desc">Go to: <a href="http://localhost:8000/todo.html" target="_blank" class="setup-link" rel="noopener" aria-label="Open localhost todo app in new tab">http://localhost:8000/todo.html</a></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="step">
-                                <div class="step-number">3</div>
-                                <div class="step-content">
-                                    <h3>Open in Browser</h3>
-                                    <p>Go to: <a href="http://localhost:8000/todo.html" target="_blank">http://localhost:8000/todo.html</a></p>
+                            <div class="setup-section setup-info">
+                                <h3>Why is this recommended?</h3>
+                                <p>A local server allows for better browser support and creates a safe way for the app to access your todo.md file.</p>
+                            </div>
+                            
+                            <div class="setup-section setup-alternatives">
+                                <h3>Alternative Commands</h3>
+                                <div class="alt-command-list" role="list" aria-label="Alternative server commands">
+                                    <div class="alt-command" role="listitem">
+                                        <code tabindex="0" aria-label="Python fallback command">python -m http.server 8000</code>
+                                        <span class="alt-desc">If python3 command doesn't work</span>
+                                    </div>
+                                    <div class="alt-command" role="listitem">
+                                        <code tabindex="0" aria-label="Node.js server command">npx http-server -p 8000</code>
+                                        <span class="alt-desc">Node.js (note the -p flag)</span>
+                                    </div>
+                                    <div class="alt-command" role="listitem">
+                                        <code tabindex="0" aria-label="PHP server command">php -S localhost:8000</code>
+                                        <span class="alt-desc">PHP built-in server</span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="setup-note">
-                            <p><strong>Why do I need to do this?</strong></p>
-                            <p>Your browser can't directly read local files for security reasons. The local server creates a safe way for the app to access your todo.md file.</p>
-                        </div>
-                        
-                        <div class="setup-alternatives">
-                            <p><strong>Alternative commands:</strong></p>
-                            <div class="alt-commands">
-                                <code>python -m http.server 8000</code> <span class="alt-label">(Python 3, if python3 doesn't work)</span><br>
-                                <code>npx http-server -p 8000</code> <span class="alt-label">(Node.js - note the -p 8000 flag)</span><br>
-                                <code>php -S localhost:8000</code> <span class="alt-label">(PHP built-in server)</span>
+                            
+                            <div class="setup-section setup-skip">
+                                <h3>Alternative approach: Skip server setup</h3>
+                                <p>Click <strong>"Enable Editing Mode"</strong> at the top of the page to run without a server. </br>Some features will be restricted.</p>
                             </div>
                         </div>
                     </div>`;
@@ -4556,17 +4715,23 @@
             try {
                 await navigator.clipboard.writeText(text);
                 // Show a brief success indicator
-                const button = event.target;
-                const originalText = button.textContent;
-                button.textContent = '✅';
+                const button = event.target.closest('button') || event.target;
+                const originalHTML = button.innerHTML;
+                
+                // Replace with checkmark icon
+                button.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
                 button.style.background = 'var(--focus-primary)';
+                button.style.borderColor = 'var(--focus-primary)';
                 button.style.color = 'white';
+                button.setAttribute('aria-label', 'Copied to clipboard');
                 
                 setTimeout(() => {
-                    button.textContent = originalText;
+                    button.innerHTML = originalHTML;
                     button.style.background = '';
+                    button.style.borderColor = '';
                     button.style.color = '';
-                }, 1500);
+                    button.setAttribute('aria-label', 'Copy command to clipboard');
+                }, 2000);
             } catch (err) {
                 console.error('Failed to copy text: ', err);
                 // Fallback for older browsers
