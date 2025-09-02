@@ -5,8 +5,8 @@
   > Example description paragraph 2
   >
   > Example description paragraph 4
-  - [x] Example subtask 1
   - [ ] Example subtask 2
+  - [x] Example subtask 1
 
 ## **To-do**
 
@@ -17,17 +17,3 @@
 ## **Done**
 
 
-
-<!-- Example of a single task below:
-
-## **Doing**
-
-- Example task 1 - Urgent #tag1 #tag2 @member_A @member_B
-  > Example description paragraph 1
-  > Example description paragraph 2
-  >
-  > Example description paragraph 4
-  - [x] Example subtask 1
-  - [ ] Example subtask 2
-
--->

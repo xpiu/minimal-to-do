@@ -3974,7 +3974,13 @@
                 const subtaskContainer = document.createElement('div');
                 subtaskContainer.className = 'subtask-container';
                 
-                task.subtasks.forEach((subtask, subtaskIndex) => {
+                // Sort subtasks: unchecked first, then checked
+                const sortedSubtasks = [...task.subtasks].sort((a, b) => {
+                    if (a.completed === b.completed) return 0;
+                    return a.completed ? 1 : -1;  // Completed items go to bottom
+                });
+                
+                sortedSubtasks.forEach((subtask, subtaskIndex) => {
                     console.log(`🔧 CREATING SUBTASK ${subtaskIndex}: "${subtask.title}"`); 
                     const subtaskDiv = document.createElement('div');
                     subtaskDiv.className = 'subtask';
@@ -5036,7 +5042,13 @@
                     
                     // Add subtasks
                     if (task.subtasks && task.subtasks.length > 0) {
-                        task.subtasks.forEach(subtask => {
+                        // Sort subtasks: unchecked first, then checked
+                        const sortedSubtasks = [...task.subtasks].sort((a, b) => {
+                            if (a.completed === b.completed) return 0;
+                            return a.completed ? 1 : -1;  // Completed items go to bottom
+                        });
+                        
+                        sortedSubtasks.forEach(subtask => {
                             if (subtask.hasCheckbox) {
                                 const checkbox = subtask.completed ? '[x]' : '[ ]';
                                 markdown += `  - ${checkbox} ${subtask.title}\n`;
