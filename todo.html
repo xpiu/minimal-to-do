@@ -919,6 +919,14 @@
             margin-bottom: 8px;
             padding-bottom: 4px;
             border-bottom: 1px solid transparent;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 4px;
+        }
+        .task-text {
+            flex-shrink: 0;
+            margin-right: 2px;
         }
 
         .task-card.has-subtasks .task-content {
@@ -948,13 +956,12 @@
         }
 
         .priority {
-            display: inline;
+            display: inline-block;
             padding: 1px 5px;
             border-radius: 8px;
             font-size: 9px;
             font-weight: 500;
             white-space: nowrap;
-            margin-left: 6px;
         }
 
         .priority.urgent {
@@ -977,15 +984,28 @@
             color: white;
         }
 
+        .member {
+            display: inline-block;
+            background: #4488ff;
+            color: white;
+            padding: 1px 5px;
+            border-radius: 8px;
+            font-size: 9px;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        [data-theme="light"] .member {
+            background: #3377ee;
+            color: white;
+        }
         .keyword {
-            display: inline;
+            display: inline-block;
             background: var(--keyword-bg);
             color: var(--text-muted);
             padding: 1px 4px;
             border-radius: 6px;
             font-size: 8px;
             white-space: nowrap;
-            margin-left: 4px;
         }
 
         .subtask {
@@ -3576,7 +3596,16 @@
                 }
             }
             
-            // Extract keywords first (hashtags)
+            // Extract members first (@mentions with - or _)
+            const members = [];
+            const memberMatches = title.match(/@[\w-]+/g);
+            if (memberMatches) {
+                members.push(...memberMatches);
+                // Remove members from content
+                title = title.replace(/@[\w-]+/g, '').trim();
+            }
+            
+            // Extract keywords (hashtags)
             const keywords = [];
             const keywordMatches = title.match(/#[\w\d-]+/g);
             if (keywordMatches) {
@@ -3600,6 +3629,7 @@
                 title,
                 priority,
                 keywords,
+                members,
                 isSubtask
             };
             
@@ -3658,7 +3688,7 @@
                 });
             }
             
-            // Add task text only (no priority/keywords mixed in)
+            // Add task text only (no priority/keywords/members mixed in)
             const textSpan = document.createElement('span');
             textSpan.className = 'task-text';
             textSpan.textContent = task.title;
@@ -3671,6 +3701,14 @@
                 prioritySpan.textContent = task.priority.charAt(0).toUpperCase() + task.priority.slice(1);
                 contentDiv.appendChild(prioritySpan);
             }
+            
+            // Add member badges
+            ;(task.members || []).forEach(member => {
+                const memberSpan = document.createElement('span');
+                memberSpan.className = 'member';
+                memberSpan.textContent = member;
+                contentDiv.appendChild(memberSpan);
+            });
             
             // Add keyword badges
             ;(task.keywords || []).forEach(keyword => {
@@ -4976,6 +5014,11 @@
                         markdown += ` ${keyword}`;
                     });
                     
+                    // Add members
+                    ;(task.members || []).forEach(member => {
+                        markdown += ` ${member}`;
+                    });
+                    
                     markdown += '\n';
                     
                     // Add descriptions with "  > " prefix
@@ -5211,6 +5254,10 @@
                     </select>
                 </div>
                 <div class="edit-section">
+                    <label>Members (comma-separated, no @ needed):</label>
+                    <input type="text" class="edit-members" placeholder="e.g. john, mary_smith, bob-jones">
+                </div>
+                <div class="edit-section">
                     <label>Keywords (comma-separated, no # needed):</label>
                     <input type="text" class="edit-keywords" placeholder="e.g. design, seo">
                 </div>
@@ -5256,6 +5303,10 @@
             overlay.querySelector('.edit-content').value = task.title;
             const contentTextarea = overlay.querySelector('.edit-content');
             overlay.querySelector('.edit-priority').value = task.priority;
+            // Show members as comma-separated list without @ in the editor
+            overlay.querySelector('.edit-members').value = (task.members || [])
+                .map(m => m.replace(/^@+/, ''))
+                .join(', ');
             // Show keywords as comma-separated list without # in the editor
             overlay.querySelector('.edit-keywords').value = (task.keywords || [])
                 .map(k => k.replace(/^#+/, ''))
@@ -5316,6 +5367,15 @@
             const saveHandler = async () => {
                 const newContent = contentTextarea.value.trim();
                 const newPriority = overlay.querySelector('.edit-priority').value;
+                // Accept comma-separated members without @ and normalize with @
+                const rawMembers = overlay.querySelector('.edit-members').value;
+                const newMembers = Array.from(new Set(
+                    rawMembers
+                        .split(/[;,\n]+|\s{2,}/)
+                        .map(m => m.trim())
+                        .filter(m => m.length > 0)
+                        .map(m => (m.startsWith('@') ? m : `@${m.replace(/^@+/, '')}`))
+                ));
                 // Accept comma-separated keywords without # and normalize with #
                 const rawKeywords = overlay.querySelector('.edit-keywords').value;
                 const newKeywords = Array.from(new Set(
@@ -5397,6 +5457,7 @@
                     // Update task data
                     window.currentSections[columnName][taskIndex].title = newContent;
                     window.currentSections[columnName][taskIndex].priority = newPriority;
+                    window.currentSections[columnName][taskIndex].members = newMembers;
                     window.currentSections[columnName][taskIndex].keywords = newKeywords;
                     
                     // Update descriptions
@@ -5481,6 +5542,7 @@
             // Handle Enter key on all inputs for auto-save
             const contentInput = contentTextarea;
             const priorityInput = overlay.querySelector('.edit-priority');
+            const membersInput = overlay.querySelector('.edit-members');
             const keywordsInput = overlay.querySelector('.edit-keywords');
             
             const inputKeyHandler = (e) => {
@@ -5505,6 +5567,7 @@
             // Subtasks auto-resize while typing
             subtasksTextarea.addEventListener('input', () => autoResizeElement(subtasksTextarea, 600));
             priorityInput.addEventListener('keydown', inputKeyHandler);
+            membersInput.addEventListener('keydown', inputKeyHandler);
             keywordsInput.addEventListener('keydown', inputKeyHandler);
             
             overlay.addEventListener('keydown', keyHandler);
@@ -5526,6 +5589,7 @@
             const newTask = {
                 title: '',
                 priority: 'normal',
+                members: [],
                 keywords: [],
                 isSubtask: false
             };
@@ -5711,6 +5775,7 @@
                 title: (task.title || '').trim(),
                 priority: ['urgent', 'high', 'normal', 'low'].includes(task.priority) ? task.priority : 'normal',
                 keywords: Array.isArray(task.keywords) ? task.keywords.filter(k => k.startsWith('#')) : [],
+                members: Array.isArray(task.members) ? task.members.filter(m => m.startsWith('@')) : [],
                 subtasks: task.subtasks ? task.subtasks.map(sanitizeSubtaskData) : undefined,
                 isSubtask: Boolean(task.isSubtask)
             };
