@@ -72,7 +72,7 @@ Ignore the todo.html file and write your tasks in the todo.md file in Markdown f
 - Brave
 - Opera
 
-**❌ Not Supported yet:**
+**❌ Not yet fully supported:**
 - Firefox
 - Safari
 
