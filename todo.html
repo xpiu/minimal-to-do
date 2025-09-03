@@ -690,8 +690,7 @@
         }
 
         .list-subtask.completed .list-subtask-text {
-            text-decoration: line-through;
-            opacity: 0.6;
+            /* Removed strikethrough and opacity change to match Board view */
         }
 
         .list-subtask-checkbox {
@@ -2397,6 +2396,7 @@
         .edit-mode-enabled .task-card[draggable="true"]:active {
             cursor: grabbing;
         }
+
 
         /* Subtask edit controls */
         .delete-subtask-btn {
@@ -4179,12 +4179,12 @@
             // Make draggable and editable if in edit mode
             if (isEditMode) {
                 card.draggable = true;
+                card.addEventListener('dragstart', handleDragStart);
+                card.addEventListener('dragend', handleDragEnd);
+                
                 card.dataset.taskIndex = index;
                 card.dataset.columnName = columnName;
                 card.dataset.taskData = JSON.stringify(task);
-                
-                card.addEventListener('dragstart', handleDragStart);
-                card.addEventListener('dragend', handleDragEnd);
                 
                 // Add click handlers for different parts with conflict prevention
                 contentDiv.addEventListener('dblclick', (e) => {
@@ -4575,13 +4575,8 @@
                 const subtaskContainer = document.createElement('div');
                 subtaskContainer.className = 'subtask-container';
                 
-                // Sort subtasks: unchecked first, then checked
-                const sortedSubtasks = [...task.subtasks].sort((a, b) => {
-                    if (a.completed === b.completed) return 0;
-                    return a.completed ? 1 : -1;  // Completed items go to bottom
-                });
-                
-                sortedSubtasks.forEach((subtask, subtaskIndex) => {
+                // Keep subtasks in their original order - no sorting by completion status
+                task.subtasks.forEach((subtask, subtaskIndex) => {
                     console.log(`🔧 CREATING SUBTASK ${subtaskIndex}: "${subtask.title}"`); 
                     const subtaskDiv = document.createElement('div');
                     subtaskDiv.className = 'subtask';
@@ -5710,15 +5705,11 @@
             // Subtasks (matching Kanban card logic with checkboxes)
             let subtasksHTML = '';
             if (task.subtasks && task.subtasks.length > 0) {
-                // Sort subtasks: unchecked first, then checked
-                const sortedSubtasks = [...task.subtasks].sort((a, b) => {
-                    if (a.completed === b.completed) return 0;
-                    return a.completed ? 1 : -1;
-                });
+                // Keep subtasks in their original order - no sorting by completion status
                 
                 subtasksHTML = `<div class="list-subtask-container">`;
                 
-                sortedSubtasks.forEach((subtask, subtaskIndex) => {
+                task.subtasks.forEach((subtask, subtaskIndex) => {
                     const completedClass = subtask.completed ? ' completed' : '';
                     const hasCheckboxClass = subtask.hasCheckbox ? ' has-checkbox' : '';
                     
@@ -6094,13 +6085,9 @@
                     
                     // Add subtasks
                     if (task.subtasks && task.subtasks.length > 0) {
-                        // Sort subtasks: unchecked first, then checked
-                        const sortedSubtasks = [...task.subtasks].sort((a, b) => {
-                            if (a.completed === b.completed) return 0;
-                            return a.completed ? 1 : -1;  // Completed items go to bottom
-                        });
+                        // Keep subtasks in their original order - no sorting by completion status
                         
-                        sortedSubtasks.forEach(subtask => {
+                        task.subtasks.forEach(subtask => {
                             if (subtask.hasCheckbox) {
                                 const checkbox = subtask.completed ? '[x]' : '[ ]';
                                 markdown += `  - ${checkbox} ${subtask.title}\n`;
@@ -6121,14 +6108,18 @@
         let draggedElement = null;
         
         function handleDragStart(e) {
+            const taskIndex = parseInt(e.target.dataset.taskIndex);
+            const columnName = e.target.dataset.columnName;
+            const task = window.currentSections[columnName][taskIndex];
+            
             draggedElement = e.target;
             e.target.classList.add('dragging');
             e.dataTransfer.effectAllowed = 'move';
             
             // Store comprehensive drag data including subtasks
             const taskData = {
-                taskIndex: parseInt(e.target.dataset.taskIndex),
-                columnName: e.target.dataset.columnName,
+                taskIndex: taskIndex,
+                columnName: columnName,
                 hasSubtasks: e.target.querySelector('.subtask') !== null,
                 subtaskCount: e.target.querySelectorAll('.subtask').length
             };
@@ -6229,9 +6220,6 @@
                 
                 const task = tasks[sourceIndex];
                 
-                // Remove from original position
-                tasks.splice(sourceIndex, 1);
-                
                 // Calculate new position (adjust if moving down in same column)
                 let newPosition = targetPosition;
                 if (sourceIndex < targetPosition) {
@@ -6239,9 +6227,12 @@
                 }
                 
                 // Ensure position is within bounds
-                newPosition = Math.max(0, Math.min(newPosition, tasks.length));
+                newPosition = Math.max(0, Math.min(newPosition, tasks.length - 1)); // -1 because we haven't removed the task yet
                 
-                // Insert at new position
+                // Remove from original position
+                tasks.splice(sourceIndex, 1);
+                
+                // Insert at new position  
                 tasks.splice(newPosition, 0, task);
                 
                 console.log(`Reordered task within ${sourceColumn}: ${sourceIndex} → ${newPosition}`);
@@ -6249,13 +6240,15 @@
             } else {
                 // Handle cross-column move
                 const task = window.currentSections[sourceColumn][sourceIndex];
-                window.currentSections[sourceColumn].splice(sourceIndex, 1);
                 
                 if (!window.currentSections[targetColumn]) {
                     window.currentSections[targetColumn] = [];
                 }
                 
                 const insertPosition = Math.max(0, Math.min(targetPosition, window.currentSections[targetColumn].length));
+                
+                // Safe to perform the move
+                window.currentSections[sourceColumn].splice(sourceIndex, 1);
                 window.currentSections[targetColumn].splice(insertPosition, 0, task);
                 
                 console.log(`Moved task from ${sourceColumn} to ${targetColumn} at position ${insertPosition}`);
@@ -6284,11 +6277,13 @@
             // Only handle cross-column drops (add to end of column)
             if (sourceColumn !== targetColumnName) {
                 const task = window.currentSections[sourceColumn][taskIndex];
-                window.currentSections[sourceColumn].splice(taskIndex, 1);
                 
                 if (!window.currentSections[targetColumnName]) {
                     window.currentSections[targetColumnName] = [];
                 }
+                
+                // Safe to perform the move
+                window.currentSections[sourceColumn].splice(taskIndex, 1);
                 window.currentSections[targetColumnName].push(task);
                 
                 // Re-render and save
