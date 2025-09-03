@@ -14,6 +14,7 @@
     ## **Example status 1**
 
     - Example task 1 - Urgent #example-tag-1
+      [created:2025-01-01] [due:2025-12-31]
       > Example description paragraph 1
       >
       > Example description paragraph 3
@@ -27,6 +28,7 @@
     Markdown conventions in our Markdown storage file:
     - Task Priority: Add ' - Urgent', ' - High', ' - Normal', or ' - Low' at the end (don't forget the dash -)
     - Task Keywords: Use hashtags like at the end of a task name `#project #urgent #meeting`
+    - Task Dates: Add `[created:YYYY-MM-DD]` and/or `[due:YYYY-MM-DD]` on the second line after the task
     - Task Description: Add '  >' before description text. The description can be broken up into multiple lines by starting a new line with '  >'. Use '  >' alone (empty line) to create paragraph breaks.
     - Subtasks: Start your indentation with 2 spaces for subtasks, e.g. `  - `
 
@@ -608,6 +610,7 @@
             padding: 8px 10px;
             border-radius: 4px;
             cursor: pointer;
+            font-weight: normal;
         }
         .column-menu .menu-item:hover { background: rgba(255,255,255,0.06); }
         [data-theme="light"] .column-menu .menu-item:hover { background: rgba(0,0,0,0.06); }
@@ -621,6 +624,34 @@
             cursor: default;
             transition: all 0.2s ease;
             position: relative;
+        }
+        
+        /* Due date styling - simplified to match description */
+        .task-dates {
+            margin-top: 4px;
+        }
+        
+        .task-due-date {
+            display: inline-block;
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.85;
+        }
+        
+        .task-due-date.overdue {
+            color: #dc2626;
+            opacity: 1;
+        }
+        
+        /* Dark mode due date */
+        [data-theme="dark"] .task-due-date {
+            color: var(--text-muted);
+            opacity: 0.75;
+        }
+        
+        [data-theme="dark"] .task-due-date.overdue {
+            color: #ef4444;
+            opacity: 1;
         }
 
         .task-card:hover {
@@ -1825,6 +1856,21 @@
             color: var(--text-muted);
             display: block;
             margin-bottom: 2px;
+        }
+        
+        .date-section {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .date-field {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .date-field input[type="date"] {
+            width: 100%;
         }
 
         .edit-section input, .edit-section select, .edit-section textarea {
@@ -3473,8 +3519,31 @@
                         // Sanitize parsed task data
                         const sanitizedTask = sanitizeTaskData(task);
                         sections[currentSection].push(sanitizedTask);
+                        // Store line number for potential date parsing on next line
+                        sanitizedTask._lineNumber = lineNumber;
                     } else {
                         console.warn(`Failed to parse task at line ${lineNumber}: ${line}`);
+                    }
+                }
+                
+                // Parse dates on dedicated line (2 spaces followed by date patterns)
+                if (currentSection && line.match(/^  \[/) && sections[currentSection].length > 0) {
+                    const lastTask = sections[currentSection][sections[currentSection].length - 1];
+                    // Check if this line immediately follows the task (for dedicated date line)
+                    if (lastTask._lineNumber && lineNumber === lastTask._lineNumber + 1) {
+                        // Extract dates from this dedicated date line
+                        const createdMatch = line.match(/\[created:(\d{4}-\d{2}-\d{2})\]/i);
+                        const dueMatch = line.match(/\[due:(\d{4}-\d{2}-\d{2})\]/i);
+                        
+                        if (createdMatch && !lastTask.createdDate) {
+                            lastTask.createdDate = createdMatch[1];
+                            console.log(`📅 Found created date ${createdMatch[1]} for task "${lastTask.title.substring(0, 30)}..."`);
+                        }
+                        if (dueMatch && !lastTask.dueDate) {
+                            lastTask.dueDate = dueMatch[1];
+                            console.log(`📅 Found due date ${dueMatch[1]} for task "${lastTask.title.substring(0, 30)}..."`);
+                        }
+                        continue; // Skip to next line, this was a date line
                     }
                 }
                 
@@ -3488,6 +3557,17 @@
                         
                         // Sanitize subtask data
                         const sanitizedSubtask = sanitizeSubtaskData(task);
+                        
+                        // If subtask has dates but parent task doesn't, inherit them to parent
+                        if (sanitizedSubtask.createdDate && !lastTask.createdDate) {
+                            lastTask.createdDate = sanitizedSubtask.createdDate;
+                            console.log(`📅 Inherited created date ${sanitizedSubtask.createdDate} from subtask to parent task`);
+                        }
+                        if (sanitizedSubtask.dueDate && !lastTask.dueDate) {
+                            lastTask.dueDate = sanitizedSubtask.dueDate;
+                            console.log(`📅 Inherited due date ${sanitizedSubtask.dueDate} from subtask to parent task`);
+                        }
+                        
                         lastTask.subtasks.push(sanitizedSubtask);
                         console.log(`🔍 ADDED SUBTASK "${sanitizedSubtask.title}" to task "${lastTask.title.substring(0, 30)}..."`);   
                     } else if (task) {
@@ -3510,14 +3590,41 @@
                             console.log(`📝 ADDED PARAGRAPH BREAK to task "${lastTask.title.substring(0, 30)}..."`);
                         } else {
                             const descriptionText = line.substring(4); // Remove "  > "
-                            lastTask.descriptions.push(descriptionText);
-                            console.log(`📝 ADDED DESCRIPTION "${descriptionText.substring(0, 40)}..." to task "${lastTask.title.substring(0, 30)}..."`);
+                            
+                            // Check for dates within description and extract them if task doesn't have them yet
+                            const createdMatch = descriptionText.match(/\[created:(\d{4}-\d{2}-\d{2})\]/i);
+                            const dueMatch = descriptionText.match(/\[due:(\d{4}-\d{2}-\d{2})\]/i);
+                            
+                            let cleanedDescription = descriptionText;
+                            if (createdMatch && !lastTask.createdDate) {
+                                lastTask.createdDate = createdMatch[1];
+                                cleanedDescription = cleanedDescription.replace(createdMatch[0], '').trim();
+                                console.log(`📅 Found created date ${createdMatch[1]} in description for task "${lastTask.title.substring(0, 30)}..."`);
+                            }
+                            if (dueMatch && !lastTask.dueDate) {
+                                lastTask.dueDate = dueMatch[1];
+                                cleanedDescription = cleanedDescription.replace(dueMatch[0], '').trim();
+                                console.log(`📅 Found due date ${dueMatch[1]} in description for task "${lastTask.title.substring(0, 30)}..."`);
+                            }
+                            
+                            // Only add description if there's content left after removing dates
+                            if (cleanedDescription) {
+                                lastTask.descriptions.push(cleanedDescription);
+                                console.log(`📝 ADDED DESCRIPTION "${cleanedDescription.substring(0, 40)}..." to task "${lastTask.title.substring(0, 30)}..."`);
+                            }
                         }
                     } else {
                         console.warn(`Orphaned description at line ${lineNumber}: ${line}`);
                     }
                 }
             }
+            
+            // Clean up temporary line numbers used for date parsing
+            Object.values(sections).forEach(tasks => {
+                tasks.forEach(task => {
+                    delete task._lineNumber;
+                });
+            });
             
             // Post-processing validation
             const validationErrors = validateSubtaskIntegrity(sections);
@@ -3596,6 +3703,24 @@
                 }
             }
             
+            // Extract dates (created and due) - they can appear anywhere in the title
+            let createdDate = null;
+            let dueDate = null;
+            
+            // Extract created date
+            const createdMatch = title.match(/\[created:(\d{4}-\d{2}-\d{2})\]/i);
+            if (createdMatch) {
+                createdDate = createdMatch[1];
+                title = title.replace(createdMatch[0], '').trim();
+            }
+            
+            // Extract due date
+            const dueMatch = title.match(/\[due:(\d{4}-\d{2}-\d{2})\]/i);
+            if (dueMatch) {
+                dueDate = dueMatch[1];
+                title = title.replace(dueMatch[0], '').trim();
+            }
+            
             // Extract members first (@mentions with - or _)
             const members = [];
             const memberMatches = title.match(/@[\w-]+/g);
@@ -3630,6 +3755,8 @@
                 priority,
                 keywords,
                 members,
+                createdDate,
+                dueDate,
                 isSubtask
             };
             
@@ -3719,6 +3846,80 @@
             });
             
             card.appendChild(contentDiv);
+            
+            // Add due date display only (not created date)
+            if (task.dueDate) {
+                const datesDiv = document.createElement('div');
+                datesDiv.className = 'task-dates';
+                
+                const dueSpan = document.createElement('span');
+                dueSpan.className = 'task-due-date';
+                
+                // Check if overdue
+                const today = new Date().toISOString().split('T')[0];
+                const isOverdue = task.dueDate < today;
+                if (isOverdue) {
+                    dueSpan.classList.add('overdue');
+                }
+                
+                dueSpan.textContent = `Due: ${task.dueDate}`;
+                dueSpan.title = `Due date: ${task.dueDate}`;
+                
+                // Add double-click/tap handler to open edit modal (only in edit mode)
+                if (isEditMode) {
+                    dueSpan.style.cursor = 'pointer';
+                    
+                    // Double-click handler for desktop
+                    dueSpan.addEventListener('dblclick', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        // Prevent editing if task is being dragged
+                        if (card.classList.contains('dragging')) {
+                            console.log('Cannot edit task while it is being dragged');
+                            return;
+                        }
+                        
+                        // Prevent editing if task is already being edited
+                        if (card.classList.contains('editing')) {
+                            console.log('Task is already being edited');
+                            return;
+                        }
+                        
+                        openTaskEditOverlay(card, task, index, columnName);
+                    });
+                    
+                    // Double-tap handler for mobile
+                    let lastTap = 0;
+                    dueSpan.addEventListener('click', (e) => {
+                        const currentTime = new Date().getTime();
+                        const tapLength = currentTime - lastTap;
+                        if (tapLength < 500 && tapLength > 0) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            // Prevent editing if task is being dragged
+                            if (card.classList.contains('dragging')) {
+                                console.log('Cannot edit task while it is being dragged');
+                                return;
+                            }
+                            
+                            // Prevent editing if task is already being edited
+                            if (card.classList.contains('editing')) {
+                                console.log('Task is already being edited');
+                                return;
+                            }
+                            
+                            openTaskEditOverlay(card, task, index, columnName);
+                        }
+                        lastTap = currentTime;
+                    });
+                }
+                
+                datesDiv.appendChild(dueSpan);
+                
+                card.appendChild(datesDiv);
+            }
             
             // Add task descriptions (preview + expandable)
             if (task.descriptions && task.descriptions.length > 0) {
@@ -5027,6 +5228,19 @@
                     
                     markdown += '\n';
                     
+                    // Add dates on second line with two-space indentation
+                    if (task.createdDate || task.dueDate) {
+                        markdown += '  ';
+                        if (task.createdDate) {
+                            markdown += `[created:${task.createdDate}]`;
+                        }
+                        if (task.dueDate) {
+                            if (task.createdDate) markdown += ' ';
+                            markdown += `[due:${task.dueDate}]`;
+                        }
+                        markdown += '\n';
+                    }
+                    
                     // Add descriptions with "  > " prefix
                     // Enhanced logic to handle paragraph breaks
                     if (task.descriptions && task.descriptions.length > 0) {
@@ -5273,6 +5487,16 @@
                     <label>Keywords (comma-separated, no # needed):</label>
                     <input type="text" class="edit-keywords" placeholder="e.g. design, seo">
                 </div>
+                <div class="edit-section date-section">
+                    <div class="date-field">
+                        <label>Created Date:</label>
+                        <input type="date" class="edit-created-date" placeholder="YYYY-MM-DD">
+                    </div>
+                    <div class="date-field">
+                        <label>Due Date:</label>
+                        <input type="date" class="edit-due-date" placeholder="YYYY-MM-DD">
+                    </div>
+                </div>
                 <div class="edit-section">
                     <label>Description (use empty lines for paragraph breaks):</label>
                     <textarea class="edit-description auto-resize-textarea" rows="2" placeholder="Enter task description details...&#10;&#10;Use empty lines to create paragraph breaks."></textarea>
@@ -5323,6 +5547,10 @@
             overlay.querySelector('.edit-keywords').value = (task.keywords || [])
                 .map(k => k.replace(/^#+/, ''))
                 .join(', ');
+            
+            // Populate date fields
+            overlay.querySelector('.edit-created-date').value = task.createdDate || '';
+            overlay.querySelector('.edit-due-date').value = task.dueDate || '';
             
             // Populate description textarea (without "  > " markdown markings)
             // Enhanced logic to preserve paragraph breaks when editing
@@ -5399,6 +5627,10 @@
                         .map(k => k.replace(/\s+/g, '-'))
                 ));
                 
+                // Get dates
+                const newCreatedDate = overlay.querySelector('.edit-created-date').value || null;
+                const newDueDate = overlay.querySelector('.edit-due-date').value || null;
+                
                 // Process descriptions - convert textarea lines to description array
                 // Enhanced logic to handle paragraph breaks intelligently
                 const descriptionsText = overlay.querySelector('.edit-description').value;
@@ -5471,6 +5703,8 @@
                     window.currentSections[columnName][taskIndex].priority = newPriority;
                     window.currentSections[columnName][taskIndex].members = newMembers;
                     window.currentSections[columnName][taskIndex].keywords = newKeywords;
+                    window.currentSections[columnName][taskIndex].createdDate = newCreatedDate;
+                    window.currentSections[columnName][taskIndex].dueDate = newDueDate;
                     
                     // Update descriptions
                     if (newDescriptions.length > 0) {
@@ -5603,6 +5837,8 @@
                 priority: 'normal',
                 members: [],
                 keywords: [],
+                createdDate: new Date().toISOString().split('T')[0], // Auto-set created date to today
+                dueDate: null,
                 isSubtask: false
             };
             

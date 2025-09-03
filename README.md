@@ -56,6 +56,7 @@ Ignore the todo.html file and write your tasks in the todo.md file in Markdown f
 - **📋 Kanban Board**: Visual task management with customizable columns (Doing, To-do, Backlog, Done)
 - **🎯 Task Management**: Create, edit, delete, and organize tasks with drag & drop
 - **🏷️ Smart Organization**: Priority levels, member assignments (@mentions), and keyword tags
+- **📅 Date Tracking**: Created and due dates for tasks with overdue highlighting
 - **📝 Subtasks**: Break down tasks into manageable subtasks
 - **🌓 Theme Toggle**: Dark and light mode support
 - **⌨️ Keyboard Navigation**: Full keyboard support for accessibility
@@ -84,6 +85,7 @@ By sticking to the following conventions, our To-do app will interpret and rende
 - **Task Priority**: Add ' - Urgent', ' - High', ' - Normal', or ' - Low' at the end (don't forget the dash -)
 - **Task Members**: Use @mentions for members `@john @mary_smith @bob-jones` (supports both - and _)
 - **Task Keywords**: Use hashtags like at the end of a task name `#project #urgent #meeting`
+- **Task Created or Due date**: Add `[created:YYYY-MM-DD]` and/or `[due:YYYY-MM-DD]` on the second line after the task
 - **Task Description**: Add '  >' before description text. The description can be broken up into multiple lines by starting a new line with '  >'. Use '  >' alone (empty line) to create paragraph breaks.
 - **Subtasks**: Start your indentation with 2 spaces for subtasks, e.g. `  - `
 
@@ -93,6 +95,7 @@ By sticking to the following conventions, our To-do app will interpret and rende
 ## **Doing**
 
 - Example task 1 - Urgent #tag1 #tag2 @member_A @member_B
+  [created:2025-01-01] [due:2025-12-31]
   > Example description line 1
   > Example description line 2
   >
@@ -153,7 +156,6 @@ Your help is very welcome.
 Areas for improvement:
 - Enhanced task filtering and search
 - Better mobile experience
-- Additional task properties (due dates, assignees)
 - Import/export functionality
 - Better accessibility features
 - Better browser compatibility
