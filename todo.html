@@ -420,12 +420,12 @@
 
         .list-section-header {
             font-family: 'JetBrains Mono', monospace;
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 12px;
+            font-weight: 700;
             color: var(--header-text);
             margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 3px solid;
+            padding-bottom: 4px;
+            border-bottom: 2px solid;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -451,11 +451,6 @@
             border-bottom-color: var(--header-text);
         }
 
-        .list-section-count {
-            font-size: 12px;
-            color: var(--text-muted);
-            font-weight: 400;
-        }
 
         .list-section-empty {
             color: var(--text-muted);
@@ -473,11 +468,12 @@
             gap: 12px;
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 8px;
+            border-radius: 4px;
             padding: 12px 16px;
             margin-bottom: 8px;
             transition: var(--focus-transition-fast);
             min-height: 60px;
+            position: relative;
         }
 
         .list-item:hover {
@@ -736,6 +732,17 @@
             background: color-mix(in srgb, var(--card-bg) 75%, var(--focus-primary) 25%);
         }
 
+        /* Task numbers for list items (matching Board View style) */
+        .list-item .list-task-number {
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            font-size: 7px;
+            color: var(--task-number-color);
+            font-weight: 400;
+            pointer-events: none;
+        }
+
         /* Mobile responsive for list view */
         @media (max-width: 768px) {
             .list-view {
@@ -744,15 +751,12 @@
             }
 
             .list-section-header {
-                font-size: 14px;
+                font-size: 12px;
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 4px;
             }
 
-            .list-section-count {
-                align-self: flex-end;
-            }
             
             .list-item {
                 padding: 12px;
@@ -5353,7 +5357,7 @@
             
             // Update button text
             const button = document.querySelector('.theme-toggle');
-            button.textContent = newTheme === 'light' ? '🌙/☀️' : '☀️/🌙';
+            button.textContent = newTheme === 'light' ? '🌙 | ☀️' : '☀️ | 🌙';
         }
 
         // View toggle functionality
@@ -5422,13 +5426,11 @@
             orderedSections.forEach(sectionName => {
                 const tasks = window.currentSections[sectionName] || [];
                 const sectionClass = sectionName.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                const taskCount = tasks.length;
 
                 listHTML += `
                     <div class="list-section">
                         <div class="list-section-header ${sectionClass}">
                             <span>${sectionName}</span>
-                            <span class="list-section-count">${taskCount} task${taskCount !== 1 ? 's' : ''}</span>
                         </div>
                 `;
 
@@ -5745,6 +5747,7 @@
                             ${subtasksHTML}
                         </div>
                     </div>
+                    <span class="list-task-number">${index + 1}</span>
                 </div>
             `;
         }
@@ -5806,7 +5809,7 @@
             // Update button text
             const button = document.querySelector('.theme-toggle');
             if (button) {
-                button.textContent = defaultTheme === 'light' ? '🌙/☀️' : '☀️/🌙';
+                button.textContent = defaultTheme === 'light' ? '🌙 | ☀️' : '☀️ | 🌙';
             }
         }
 
