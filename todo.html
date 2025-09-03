@@ -171,7 +171,7 @@
             font-weight: 500;
         }
 
-        .refresh-btn, .theme-toggle {
+        .refresh-btn, .theme-toggle, .view-toggle-btn {
             background: var(--button-bg);
             color: var(--text-color);
             border: 1px solid var(--button-border);
@@ -187,7 +187,7 @@
             height: var(--header-btn-height);
         }
 
-        .refresh-btn:hover, .theme-toggle:hover {
+        .refresh-btn:hover, .theme-toggle:hover, .view-toggle-btn:hover {
             background: var(--button-hover);
         }
 
@@ -404,6 +404,397 @@
         @media (max-width: 1023px) {
             .kanban-board {
                 flex-wrap: wrap;
+            }
+        }
+
+        /* List view styles */
+        .list-view {
+            padding: 16px;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .list-section {
+            margin-bottom: 32px;
+        }
+
+        .list-section-header {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--header-text);
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 3px solid;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .list-section-header.doing {
+            border-bottom-color: #ff8800;
+        }
+
+        .list-section-header.todo {
+            border-bottom-color: #4488ff;
+        }
+
+        .list-section-header.backlog {
+            border-bottom-color: #888888;
+        }
+
+        .list-section-header.done {
+            border-bottom-color: #44aa44;
+        }
+
+        .list-section-header:not(.doing):not(.todo):not(.backlog):not(.done) {
+            border-bottom-color: var(--header-text);
+        }
+
+        .list-section-count {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .list-section-empty {
+            color: var(--text-muted);
+            font-style: italic;
+            text-align: center;
+            padding: 20px;
+            background: var(--column-bg);
+            border-radius: 8px;
+            border: 1px solid var(--column-border);
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            transition: var(--focus-transition-fast);
+            min-height: 60px;
+        }
+
+        .list-item:hover {
+            border-color: var(--card-hover-border);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .list-item-content {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .list-item-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .list-item-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 4px;
+        }
+
+        .list-item-title {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-color);
+            margin: 0;
+            line-height: 1.3;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .list-item-badges {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+
+        .list-item-description {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 300px;
+        }
+
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+            min-width: 60px;
+            justify-content: center;
+        }
+
+        .status-badge.todo {
+            background: var(--text-subtle);
+            color: var(--text-color);
+        }
+
+        .status-badge.doing {
+            background: #4488ff;
+            color: white;
+        }
+
+        .status-badge.done {
+            background: #44aa44;
+            color: white;
+        }
+
+        .status-badge.blocked {
+            background: #ff4444;
+            color: white;
+        }
+
+        .list-priority {
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 9px;
+            font-weight: 500;
+        }
+
+        .list-priority.urgent { background: #ff4444; color: white; }
+        .list-priority.high { background: #FF8C42; color: white; }
+        .list-priority.normal { background: #ff8800; color: white; }
+        .list-priority.low { background: #44aa44; color: white; }
+
+        .list-item-due-date {
+            margin-bottom: 2px;
+            font-size: 10px;
+            color: var(--text-subtle);
+        }
+
+        .list-item-tags {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .list-subtasks-summary {
+            margin-top: 4px;
+        }
+
+        .subtasks-count {
+            font-size: 10px;
+            color: var(--text-subtle);
+            background: var(--keyword-bg);
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        /* List view descriptions matching Kanban style */
+        .list-task-description-container {
+            margin-top: 6px;
+            position: relative;
+        }
+
+        .list-description-line {
+            display: flex;
+            align-items: center;
+            margin-bottom: 2px;
+            min-height: 1.3em;
+            position: relative;
+        }
+
+        .list-description-text {
+            font-size: 11px;
+            color: var(--text-muted);
+            line-height: 1.3;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .list-description-ellipsis-indicator {
+            color: var(--text-muted);
+            opacity: 0.6;
+            font-size: 11px;
+            margin-left: auto;
+            margin-right: 20px;
+            user-select: none;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .list-description-text.paragraph-break-preview {
+            opacity: 0.3;
+            height: 1em;
+        }
+
+        .list-description-toggle {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 2px;
+            border-radius: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s ease;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 18px;
+            height: 18px;
+        }
+
+        .list-description-toggle:hover {
+            background: var(--button-hover);
+        }
+
+        .list-description-toggle[aria-expanded="true"] svg {
+            transform: rotate(180deg);
+        }
+
+        /* List view subtasks matching Kanban style */
+        .list-subtask-container {
+            margin-top: 6px;
+        }
+
+        .list-subtask {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 3px;
+            padding: 2px 0;
+        }
+
+        .list-subtask.completed .list-subtask-text {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .list-subtask-checkbox {
+            width: 12px;
+            height: 12px;
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .list-subtask-text {
+            font-size: 11px;
+            color: var(--subtask-color);
+            line-height: 1.3;
+        }
+
+        /* Ensure list view uses same badge styles as Kanban cards */
+        .list-item .priority,
+        .list-item .member,
+        .list-item .keyword {
+            display: inline-flex;
+            align-items: center;
+            margin-right: 4px;
+            margin-bottom: 2px;
+        }
+
+        .list-item .task-due-date.overdue {
+            color: #ff4444;
+            font-weight: 500;
+        }
+
+        /* List item edit mode styling */
+        .edit-mode-enabled .list-item {
+            cursor: pointer;
+        }
+
+        .edit-mode-enabled .list-item:hover {
+            background: color-mix(in srgb, var(--card-bg) 85%, var(--focus-primary) 15%);
+        }
+
+        .edit-mode-enabled .list-item:active {
+            transform: translateY(0);
+            background: color-mix(in srgb, var(--card-bg) 75%, var(--focus-primary) 25%);
+        }
+
+        /* Mobile responsive for list view */
+        @media (max-width: 768px) {
+            .list-view {
+                padding: 12px;
+                max-width: 100%;
+            }
+
+            .list-section-header {
+                font-size: 14px;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .list-section-count {
+                align-self: flex-end;
+            }
+            
+            .list-item {
+                padding: 12px;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            
+            .list-item-content {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            
+            .list-item-meta {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            
+            .list-item-description {
+                max-width: none;
+                white-space: normal;
+                overflow: visible;
+                text-overflow: clip;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+            }
+
+            .list-item-title {
+                font-size: 14px;
+                line-height: 1.4;
+                white-space: normal;
+                overflow: visible;
+                text-overflow: clip;
+            }
+
+            .list-item-dates {
+                width: 100%;
+                justify-content: flex-start;
             }
         }
 
@@ -809,6 +1200,7 @@
         /* Header elements focus */
         .refresh-btn:focus-visible,
         .theme-toggle:focus-visible,
+        .view-toggle-btn:focus-visible,
         .collapse-header-btn:focus-visible,
         .show-header-btn:focus-visible {
             outline: var(--focus-outline-width) solid var(--focus-secondary);
@@ -2283,6 +2675,7 @@
         /* Secondary button focus (refresh, theme toggle, etc.) */
         .refresh-btn:focus-visible,
         .theme-toggle:focus-visible,
+        .view-toggle-btn:focus-visible,
         .collapse-header-btn:focus-visible,
         .show-header-btn:focus-visible,
         .hamburger-btn:focus-visible,
@@ -2865,6 +3258,7 @@
                     Running a local HTTP server allows the page to fetch your live todo.md file automatically.<br><br>
                 </div>
             </button>
+            <button class="view-toggle-btn" onclick="toggleView()" title="Switch to List view" aria-label="Switch to List view">List View</button>
             <button class="refresh-btn" onclick="forceRefresh()">Refresh</button>
             <button class="theme-toggle" onclick="toggleTheme()">☀/🌙</button>
             <button id="collapse-header" class="collapse-header-btn" title="Hide header" aria-label="Hide header">
@@ -2882,12 +3276,17 @@
         <div class="loading">Loading todo data...</div>
     </div>
 
+    <div id="list-view" class="list-view" style="display: none;">
+        <div class="loading">Loading todo data...</div>
+    </div>
+
     <!-- Mobile menu container -->
     <div id="mobile-menu" class="mobile-menu" role="menu" aria-labelledby="hamburger">
         <div class="menu-group">
             <div id="mm-file-status" class="status-line">Serving todo.md</div>
         </div>
         <div class="menu-group">
+            <button class="menu-item-btn" id="mm-view-toggle" onclick="toggleView(); closeMobileMenu();">List View</button>
             <button class="menu-item-btn" onclick="forceRefresh()">Refresh</button>
             <button class="menu-item-btn" onclick="toggleTheme(); closeMobileMenu();">Toggle light/dark mode</button>
             <button class="menu-item-btn" id="mm-enable-editing" onclick="initializeEditing()">Enable editing</button>
@@ -4904,6 +5303,12 @@
                 
                 renderKanbanBoard(sections);
                 
+                // Also update list view if it's currently visible
+                const listView = document.getElementById('list-view');
+                if (listView && listView.style.display !== 'none') {
+                    renderListView();
+                }
+                
             } catch (error) {
                 board.innerHTML = `<div class="setup-guide">
                     <div class="setup-icon">⚠️</div>
@@ -4953,6 +5358,403 @@
             // Update button text
             const button = document.querySelector('.theme-toggle');
             button.textContent = newTheme === 'light' ? '🌙/☀️' : '☀️/🌙';
+        }
+
+        // View toggle functionality
+        function toggleView() {
+            const kanbanBoard = document.getElementById('kanban-board');
+            const listView = document.getElementById('list-view');
+            const toggleBtn = document.querySelector('.view-toggle-btn');
+            const mobileToggleBtn = document.getElementById('mm-view-toggle');
+            
+            const isKanbanVisible = kanbanBoard.style.display !== 'none';
+            
+            if (isKanbanVisible) {
+                // Switch to List view
+                kanbanBoard.style.display = 'none';
+                listView.style.display = 'block';
+                if (toggleBtn) {
+                    toggleBtn.textContent = 'Board View';
+                    toggleBtn.title = 'Switch to Board view';
+                    toggleBtn.setAttribute('aria-label', 'Switch to Board view');
+                }
+                if (mobileToggleBtn) {
+                    mobileToggleBtn.textContent = 'Board View';
+                }
+                localStorage.setItem('view', 'list');
+                
+                // Render list view with current data
+                renderListView();
+            } else {
+                // Switch to Kanban view
+                listView.style.display = 'none';
+                kanbanBoard.style.display = 'flex';
+                if (toggleBtn) {
+                    toggleBtn.textContent = 'List View';
+                    toggleBtn.title = 'Switch to List view';
+                    toggleBtn.setAttribute('aria-label', 'Switch to List view');
+                }
+                if (mobileToggleBtn) {
+                    mobileToggleBtn.textContent = 'List View';
+                }
+                localStorage.setItem('view', 'kanban');
+            }
+        }
+
+        // Render list view
+        function renderListView() {
+            const listView = document.getElementById('list-view');
+            
+            if (!window.currentSections) {
+                listView.innerHTML = '<div class="loading">No todo data available</div>';
+                return;
+            }
+
+            // Generate HTML grouped by status
+            let listHTML = '';
+            
+            // Get all sections (including empty ones) in a consistent order
+            const sectionNames = Object.keys(window.currentSections);
+            
+            // Ensure consistent order: common statuses first, then others alphabetically
+            const commonOrder = ['Doing', 'To-do', 'Backlog', 'Done'];
+            const orderedSections = [
+                ...commonOrder.filter(name => sectionNames.includes(name)),
+                ...sectionNames.filter(name => !commonOrder.includes(name)).sort()
+            ];
+
+            orderedSections.forEach(sectionName => {
+                const tasks = window.currentSections[sectionName] || [];
+                const sectionClass = sectionName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                const taskCount = tasks.length;
+
+                listHTML += `
+                    <div class="list-section">
+                        <div class="list-section-header ${sectionClass}">
+                            <span>${sectionName}</span>
+                            <span class="list-section-count">${taskCount} task${taskCount !== 1 ? 's' : ''}</span>
+                        </div>
+                `;
+
+                if (tasks.length === 0) {
+                    listHTML += `<div class="list-section-empty">No tasks in this section</div>`;
+                } else {
+                    tasks.forEach((task, index) => {
+                        const taskElement = createListTaskElement(task, index, sectionName);
+                        listHTML += taskElement;
+                    });
+                }
+
+                listHTML += `</div>`;
+            });
+
+            // Clean up any orphaned overlays from previous render
+            const orphanedOverlays = document.querySelectorAll('[data-list-item-id]');
+            orphanedOverlays.forEach(overlay => {
+                if (!document.getElementById(overlay.dataset.listItemId)) {
+                    overlay.remove();
+                    console.log('🧹 Cleaned up orphaned overlay');
+                }
+            });
+            
+            listView.innerHTML = listHTML;
+
+            // Add click handlers to list items for editing
+            addListItemClickHandlers();
+            
+            // Add functionality for description toggles and subtask checkboxes
+            addListItemFunctionality();
+        }
+
+        // Add click handlers to list items
+        function addListItemClickHandlers() {
+            const listItems = document.querySelectorAll('.list-item');
+            
+            listItems.forEach(listItem => {
+                // Skip if already has handler
+                if (listItem.hasListViewHandler) {
+                    return;
+                }
+                
+                const dblClickHandler = (e) => {
+                    console.log('🔍 LIST VIEW: Double-click detected on list item');
+                    console.log('🔍 Edit mode status:', isEditMode);
+                    console.log('🔍 Target element:', e.target);
+                    console.log('🔍 List item:', listItem);
+                    
+                    e.preventDefault();
+                    e.stopPropagation();
+                    
+                    // Only handle clicks in edit mode
+                    if (!isEditMode) {
+                        console.log('❌ Not in edit mode - ignoring double-click');
+                        return;
+                    }
+                    
+                    // Get task data from the list item
+                    const taskIndex = parseInt(listItem.dataset.taskIndex);
+                    const sectionName = listItem.dataset.section;
+                    
+                    console.log('🔍 Task index:', taskIndex, 'Section:', sectionName);
+                    
+                    // Find the task in the data
+                    const task = window.currentSections[sectionName][taskIndex];
+                    
+                    if (!task) {
+                        console.log('❌ Task not found in data');
+                        return;
+                    }
+                    
+                    console.log('✅ Task found:', task);
+                    
+                    // Prevent editing if task is already being edited
+                    if (listItem.classList.contains('editing')) {
+                        console.log('❌ Task is already being edited');
+                        return;
+                    }
+                    
+                    console.log('🚀 Opening edit overlay...');
+                    
+                    // List items don't have overlays, so we need to create one temporarily  
+                    // But we'll append it to body to avoid positioning conflicts
+                    let overlay = document.querySelector(`[data-list-item-id="${listItem.id}"]`);
+                    if (!overlay) {
+                        overlay = createTaskEditOverlay();
+                        // Append to body instead of listItem to avoid transform conflicts
+                        document.body.appendChild(overlay);
+                        // Add a reference so we can find it later
+                        overlay.dataset.listItemId = listItem.id;
+                        console.log('✅ Created temporary overlay for list item (appended to body)');
+                    }
+                    
+                    // Create a wrapper that acts like the card for the openTaskEditOverlay function
+                    const overlayWrapper = {
+                        querySelector: (selector) => {
+                            if (selector === '.task-edit-overlay') {
+                                return overlay;
+                            }
+                            return null;
+                        },
+                        classList: {
+                            add: (className) => listItem.classList.add(className),
+                            remove: (className) => listItem.classList.remove(className),
+                            contains: (className) => listItem.classList.contains(className)
+                        }
+                    };
+                    
+                    // Open the edit overlay
+                    openTaskEditOverlay(overlayWrapper, task, taskIndex, sectionName);
+                };
+                
+                listItem.addEventListener('dblclick', dblClickHandler);
+                listItem.hasListViewHandler = true;
+            });
+            
+            // Update cursors based on edit mode
+            updateListViewCursors();
+        }
+
+        // Update list view item cursors based on edit mode
+        function updateListViewCursors() {
+            const listItems = document.querySelectorAll('.list-item');
+            listItems.forEach(listItem => {
+                if (isEditMode) {
+                    listItem.style.cursor = 'pointer';
+                } else {
+                    listItem.style.cursor = 'default';
+                }
+            });
+        }
+
+        // Add functionality for description toggles and subtask checkboxes
+        function addListItemFunctionality() {
+            // Description toggle buttons
+            const toggleButtons = document.querySelectorAll('.list-description-toggle:not([data-handler-attached])');
+            toggleButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // Don't stop propagation - allow double-click to work on parent
+                    
+                    const container = button.closest('.list-task-description-container');
+                    const additionalDescriptions = container.querySelector('.list-additional-descriptions');
+                    const isExpanded = button.getAttribute('aria-expanded') === 'true';
+                    
+                    if (isExpanded) {
+                        additionalDescriptions.style.display = 'none';
+                        button.setAttribute('aria-expanded', 'false');
+                    } else {
+                        additionalDescriptions.style.display = 'block';
+                        button.setAttribute('aria-expanded', 'true');
+                    }
+                });
+                
+                // Also add double-click handler to the button itself for edit modal
+                button.addEventListener('dblclick', (e) => {
+                    e.preventDefault();
+                    // Let the event bubble up to the parent list item for editing
+                });
+                
+                button.setAttribute('data-handler-attached', 'true');
+            });
+            
+            // Subtask checkboxes - these should not interfere with double-click
+            const subtaskCheckboxes = document.querySelectorAll('.list-subtask-checkbox:not([data-handler-attached])');
+            subtaskCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    // Don't stop propagation for double-clicks to work
+                    
+                    const sectionName = checkbox.dataset.section;
+                    const taskIndex = parseInt(checkbox.dataset.taskIndex);
+                    const subtaskIndex = parseInt(checkbox.dataset.subtaskIndex);
+                    const isChecked = checkbox.checked;
+                    
+                    // Call the existing subtask toggle function
+                    toggleSubtaskCompletion(sectionName, taskIndex, subtaskIndex, isChecked);
+                });
+                
+                checkbox.setAttribute('data-handler-attached', 'true');
+            });
+        }
+
+        // Create individual list task element
+        function createListTaskElement(task, index, sectionName) {
+            const taskId = `list-task-${sectionName}-${index}`;
+            
+            // Task title (clean text without priority/keywords/members)
+            const taskText = task.title;
+
+            // Priority badge (matching Kanban card logic)
+            let priorityHTML = '';
+            if (task.priority && task.priority !== 'normal') {
+                priorityHTML = `<span class="priority ${task.priority}">${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span>`;
+            }
+
+            // Member badges
+            let membersHTML = '';
+            if (task.members && task.members.length > 0) {
+                membersHTML = task.members.map(member => 
+                    `<span class="member">${member}</span>`
+                ).join('');
+            }
+
+            // Keyword badges
+            let keywordsHTML = '';
+            if (task.keywords && task.keywords.length > 0) {
+                keywordsHTML = task.keywords.map(keyword => 
+                    `<span class="keyword">${keyword}</span>`
+                ).join('');
+            }
+
+            // Due date (matching Kanban card logic - only due date, not created)
+            let dueDateHTML = '';
+            if (task.dueDate) {
+                const today = new Date().toISOString().split('T')[0];
+                const isOverdue = task.dueDate < today;
+                const overdueClass = isOverdue ? ' overdue' : '';
+                dueDateHTML = `<div class="list-item-due-date">
+                    <span class="task-due-date${overdueClass}" title="Due date: ${task.dueDate}">Due: ${task.dueDate}</span>
+                </div>`;
+            }
+
+            // Descriptions (matching Kanban card logic)
+            let descriptionsHTML = '';
+            if (task.descriptions && task.descriptions.length > 0) {
+                const firstLine = task.descriptions[0];
+                const hasMultipleLines = task.descriptions.length > 1;
+                
+                descriptionsHTML = `<div class="list-task-description-container">`;
+                
+                if (firstLine === '') {
+                    descriptionsHTML += `<div class="list-description-line">
+                        <span class="list-description-text paragraph-break-preview">&nbsp;</span>
+                        ${hasMultipleLines ? `<span class="list-description-ellipsis-indicator">...</span>
+                        <button class="list-description-toggle" aria-expanded="false">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>` : ''}
+                    </div>`;
+                } else {
+                    descriptionsHTML += `<div class="list-description-line">
+                        <span class="list-description-text">${firstLine}</span>
+                        ${hasMultipleLines ? `<span class="list-description-ellipsis-indicator">...</span>
+                        <button class="list-description-toggle" aria-expanded="false">
+                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 9l6 6 6-6"/>
+                            </svg>
+                        </button>` : ''}
+                    </div>`;
+                }
+                
+                if (hasMultipleLines) {
+                    const remainingLines = task.descriptions.slice(1);
+                    descriptionsHTML += `<div class="list-additional-descriptions" style="display: none;">`;
+                    remainingLines.forEach(line => {
+                        if (line === '') {
+                            descriptionsHTML += `<div class="list-description-line">
+                                <span class="list-description-text paragraph-break-preview">&nbsp;</span>
+                            </div>`;
+                        } else {
+                            descriptionsHTML += `<div class="list-description-line">
+                                <span class="list-description-text">${line}</span>
+                            </div>`;
+                        }
+                    });
+                    descriptionsHTML += `</div>`;
+                }
+                
+                descriptionsHTML += `</div>`;
+            }
+
+            // Subtasks (matching Kanban card logic with checkboxes)
+            let subtasksHTML = '';
+            if (task.subtasks && task.subtasks.length > 0) {
+                // Sort subtasks: unchecked first, then checked
+                const sortedSubtasks = [...task.subtasks].sort((a, b) => {
+                    if (a.completed === b.completed) return 0;
+                    return a.completed ? 1 : -1;
+                });
+                
+                subtasksHTML = `<div class="list-subtask-container">`;
+                
+                sortedSubtasks.forEach((subtask, subtaskIndex) => {
+                    const completedClass = subtask.completed ? ' completed' : '';
+                    const hasCheckboxClass = subtask.hasCheckbox ? ' has-checkbox' : '';
+                    
+                    subtasksHTML += `<div class="list-subtask${completedClass}${hasCheckboxClass}">`;
+                    
+                    if (subtask.hasCheckbox) {
+                        const checked = subtask.completed ? 'checked' : '';
+                        subtasksHTML += `<input type="checkbox" class="list-subtask-checkbox" ${checked} 
+                            data-section="${sectionName}" data-task-index="${index}" data-subtask-index="${subtaskIndex}">`;
+                    }
+                    
+                    subtasksHTML += `<span class="list-subtask-text">${subtask.title}</span>`;
+                    subtasksHTML += `</div>`;
+                });
+                
+                subtasksHTML += `</div>`;
+            }
+
+            return `
+                <div class="list-item" id="${taskId}" data-task-index="${index}" data-section="${sectionName}">
+                    <div class="list-item-content">
+                        <div class="list-item-main">
+                            <div class="list-item-title-row">
+                                <div class="list-item-title">${taskText}</div>
+                                <div class="list-item-badges">
+                                    ${priorityHTML}
+                                    ${membersHTML}
+                                    ${keywordsHTML}
+                                </div>
+                            </div>
+                            ${dueDateHTML}
+                            ${descriptionsHTML}
+                            ${subtasksHTML}
+                        </div>
+                    </div>
+                </div>
+            `;
         }
 
         // Copy to clipboard utility function
@@ -5013,6 +5815,41 @@
             const button = document.querySelector('.theme-toggle');
             if (button) {
                 button.textContent = defaultTheme === 'light' ? '🌙/☀️' : '☀️/🌙';
+            }
+        }
+
+        // Initialize view on page load
+        function initializeView() {
+            const savedView = localStorage.getItem('view');
+            const defaultView = savedView || 'kanban'; // Default to kanban view
+            
+            const kanbanBoard = document.getElementById('kanban-board');
+            const listView = document.getElementById('list-view');
+            const toggleBtn = document.querySelector('.view-toggle-btn');
+            const mobileToggleBtn = document.getElementById('mm-view-toggle');
+            
+            if (defaultView === 'list') {
+                kanbanBoard.style.display = 'none';
+                listView.style.display = 'block';
+                if (toggleBtn) {
+                    toggleBtn.textContent = 'Board View';
+                    toggleBtn.title = 'Switch to Board view';
+                    toggleBtn.setAttribute('aria-label', 'Switch to Board view');
+                }
+                if (mobileToggleBtn) {
+                    mobileToggleBtn.textContent = 'Board View';
+                }
+            } else {
+                listView.style.display = 'none';
+                kanbanBoard.style.display = 'flex';
+                if (toggleBtn) {
+                    toggleBtn.textContent = 'List View';
+                    toggleBtn.title = 'Switch to List view';
+                    toggleBtn.setAttribute('aria-label', 'Switch to List view');
+                }
+                if (mobileToggleBtn) {
+                    mobileToggleBtn.textContent = 'List View';
+                }
             }
         }
 
@@ -6346,6 +7183,16 @@
             editBtn.className = 'refresh-btn';
             headerRight.insertBefore(editBtn, themeToggle);
             document.getElementById('file-status').innerHTML = `Editing: <strong>${fileName}</strong>`;
+            
+            // Update list view cursors and re-attach handlers if in list view
+            updateListViewCursors();
+            
+            // Re-initialize list view handlers to ensure edit mode check works
+            if (document.getElementById('list-view').style.display !== 'none') {
+                console.log('🔧 Re-initializing list view handlers for edit mode');
+                addListItemClickHandlers();
+                addListItemFunctionality();
+            }
         }
         
         // Restore editing mode from localStorage on page load
@@ -6382,6 +7229,12 @@
             // Clear the board immediately
             const board = document.getElementById('kanban-board');
             board.innerHTML = '<div class="loading">Refreshing...</div>';
+            
+            // Also clear list view if it exists
+            const listView = document.getElementById('list-view');
+            if (listView) {
+                listView.innerHTML = '<div class="loading">Refreshing...</div>';
+            }
             
             // Wait a bit for DOM to clear
             await new Promise(resolve => setTimeout(resolve, 100));
@@ -6429,6 +7282,9 @@
             try {
                 initializeTheme();
                 console.log('Theme initialized');
+                
+                initializeView();
+                console.log('View initialized');
                 
                 wireHeaderCollapse();
                 console.log('Header collapse wired');

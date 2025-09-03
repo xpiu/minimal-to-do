@@ -1,6 +1,7 @@
 ## **Doing**
 
-- Example task 1 - Urgent #tag1 #tag2 @member_A @member_B
+- Example task 1
+- Example task 2 - Urgent #tag-A #tag_B @member-A @member-B
   [created:2025-01-01] [due:2030-01-01]
   > Example description paragraph 1
   > Example description paragraph 2
