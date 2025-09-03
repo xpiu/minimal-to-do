@@ -699,6 +699,7 @@
             height: 12px;
             margin: 0;
             cursor: pointer;
+            accent-color: var(--focus-primary);
         }
 
         .list-subtask-text {
@@ -728,7 +729,7 @@
         }
 
         .edit-mode-enabled .list-item:hover {
-            background: color-mix(in srgb, var(--card-bg) 85%, var(--focus-primary) 15%);
+            /* Removed green background effect - no background change needed */
         }
 
         .edit-mode-enabled .list-item:active {
