@@ -2854,10 +2854,11 @@
             align-items: flex-start;
             gap: 12px;
             position: relative;
+            padding-right: 24px; /* Reserve space for toggle button */
         }
 
         .description-line-text {
-            flex: 1;
+            flex: 1 1 0%; /* Explicit flex-basis of 0 to force proper shrinking */
             color: var(--text-muted);
             opacity: 0.8;
             font-weight: 400;
@@ -2871,6 +2872,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
             max-height: 1.3em;
+            min-width: 0; /* Allow flex item to shrink below content size */
         }
 
         /* When expanded, show full text without truncation - correct selector order */
@@ -2888,6 +2890,29 @@
             overflow: visible;
             text-overflow: clip;
             max-height: none;
+            max-width: none;
+            width: auto; /* Allow full width expansion */
+            flex: 1 1 auto; /* Allow natural flex behavior when expanded */
+        }
+        
+        /* Improved single-line expansion styles */
+        .task-description-expanded {
+            margin: 4px 0;
+            padding: 2px 0;
+            transition: all 0.2s ease;
+        }
+        
+        .task-description-expanded.collapsed {
+            max-height: 0;
+            opacity: 0;
+            margin: 0;
+            overflow: hidden;
+        }
+        
+        .task-description-expanded.expanded {
+            max-height: 200px;
+            opacity: 1;
+            overflow: visible;
         }
 
         /* Enhanced readability on hover */
@@ -2898,11 +2923,11 @@
 
         /* Chevron toggle button - positioned within preview area */
         .task-description-toggle {
-            display: inline-flex;
+            display: none; /* Hidden by default, shown only when truncation is detected */
             align-items: center;
             justify-content: center;
-            width: 14px;
-            height: 14px;
+            width: 20px;
+            height: 20px;
             padding: 0;
             background: transparent;
             border: none;
@@ -2910,15 +2935,21 @@
             cursor: pointer;
             color: var(--text-muted);
             opacity: 0.6;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s ease;
             flex-shrink: 0;
-            transform: translateY(-1px);
+            position: absolute;
+            right: 0;
+            top: 2px;
+        }
+        
+        /* Show toggle when truncation is detected */
+        .task-description-toggle.visible {
+            display: inline-flex !important;
         }
 
         .task-description-toggle:hover {
             opacity: 1;
             background: color-mix(in srgb, var(--text-muted) 15%, transparent);
-            transform: translateY(-1px) scale(1.05);
         }
 
         .task-card:hover .task-description-toggle {
@@ -2940,7 +2971,7 @@
         }
 
         .task-description-toggle.expanded svg {
-            transform: rotate(180deg) scale(1.1);
+            transform: rotate(180deg);
         }
 
 
@@ -4490,69 +4521,109 @@
                     // Add containers to main description container
                     descriptionContainer.appendChild(lineContainer);
                     descriptionContainer.appendChild(additionalContainer);
-                    card.appendChild(descriptionContainer);
+                    contentDiv.appendChild(descriptionContainer);
                 } else {
                     // Single line description - just show line container, no chevron
                     descriptionContainer.appendChild(lineContainer);
-                    card.appendChild(descriptionContainer);
+                    contentDiv.appendChild(descriptionContainer);
                 }
                 
-                // Add text truncation functionality after DOM insertion
+                // Robust truncation detection with pre-truncation measurement
                 setTimeout(() => {
-                    const ellipsisIndicatorWidth = hasMultipleLines ? 20 : 0; // Account for our ellipsis indicator
-                    const maxWidth = lineContainer.offsetWidth - (hasMultipleLines ? toggleBtn.offsetWidth + ellipsisIndicatorWidth + 8 : 8);
-                    const textWidth = getTextWidth(firstLine, window.getComputedStyle(lineText));
-                    
-                    if (false) { // Disabled: Let CSS handle text flow naturally
-                        // For multiple lines, don't add "..." since we have the indicator
-                        if (hasMultipleLines) {
-                            // Truncate without adding "..."
-                            const truncatedText = truncateTextWithoutEllipsis(firstLine, maxWidth, window.getComputedStyle(previewText));
-                            previewText.textContent = truncatedText;
-                        } else {
-                            // For single lines, use normal truncation with "..."
-                            const truncatedText = truncateTextToFit(firstLine, maxWidth, window.getComputedStyle(previewText));
-                            previewText.textContent = truncatedText;
+                    if (hasMultipleLines) {
+                        // Multi-line descriptions: make existing chevron visible
+                        toggleBtn.classList.add('visible');
+                        // Toggle functionality is already handled in the multi-line section above
+                    } else {
+                        // For single-line descriptions, measure text width before CSS truncation is applied
+                        const textContent = lineText.textContent;
                         
-                            // Add chevron for truncated single line
-                            previewContainer.appendChild(toggleBtn);
-                            toggleBtn.setAttribute('aria-label', 'Show full description');
+                        // Helper function to measure actual text width without truncation
+                        const measureTextWidth = () => {
+                            // Create temporary measurement element with same styles but no truncation
+                            const temp = document.createElement('span');
+                            const computedStyle = window.getComputedStyle(lineText);
                             
-                            // Create expanded container for full text display
-                            const expandedContainer = document.createElement('div');
-                            expandedContainer.className = 'task-description-expanded collapsed';
+                            // Copy relevant styles but disable truncation
+                            temp.style.fontFamily = computedStyle.fontFamily;
+                            temp.style.fontSize = computedStyle.fontSize;
+                            temp.style.fontWeight = computedStyle.fontWeight;
+                            temp.style.letterSpacing = computedStyle.letterSpacing;
+                            temp.style.position = 'absolute';
+                            temp.style.visibility = 'hidden';
+                            temp.style.whiteSpace = 'nowrap';
+                            temp.style.overflow = 'visible';
+                            temp.style.textOverflow = 'clip';
+                            temp.style.maxWidth = 'none';
+                            temp.style.width = 'auto';
+                            temp.textContent = textContent;
                             
-                            const expandedContent = document.createElement('div');
-                            expandedContent.className = 'task-description-content';
+                            lineText.parentNode.appendChild(temp);
+                            const actualWidth = temp.offsetWidth;
+                            lineText.parentNode.removeChild(temp);
                             
-                            const fullTextLine = document.createElement('div');
-                            fullTextLine.className = 'description-line';
-                            fullTextLine.textContent = firstLine;
-                            expandedContent.appendChild(fullTextLine);
+                            return actualWidth;
+                        };
+                        
+                        // Get available width in the container
+                        const getAvailableWidth = () => {
+                            const container = lineText.closest('.task-description-line');
+                            const containerStyle = window.getComputedStyle(container);
+                            const containerWidth = container.clientWidth;
+                            const paddingLeft = parseFloat(containerStyle.paddingLeft) || 0;
+                            const paddingRight = parseFloat(containerStyle.paddingRight) || 0;
+                            const reservedSpace = 28; // Space for chevron and margins
                             
-                            expandedContainer.appendChild(expandedContent);
-                            // Preview container already added to card, just add expanded container
-                            card.insertBefore(expandedContainer, card.querySelector('.subtask-container') || null);
+                            return containerWidth - paddingLeft - paddingRight - reservedSpace;
+                        };
+                        
+                        // Force layout and measure
+                        lineText.offsetWidth;
+                        
+                        const actualTextWidth = measureTextWidth();
+                        const availableWidth = getAvailableWidth();
+                        const isOverflowing = actualTextWidth > availableWidth;
+                        const isLongText = textContent.length > 25; // Character-based fallback
+                        const shouldShowChevron = isOverflowing || isLongText;
+                        
+                        console.log(`📏 Enhanced single-line check: "${textContent.substring(0, 30)}...", length=${textContent.length}, actualWidth=${actualTextWidth}px, availableWidth=${availableWidth}px, overflowing=${isOverflowing}, isLongText=${isLongText}, shouldShow=${shouldShowChevron}`);
+                        
+                        if (shouldShowChevron) {
+                            // Add ellipsis indicator for single line
+                            const ellipsisIndicator = document.createElement('span');
+                            ellipsisIndicator.className = 'description-ellipsis-indicator';
+                            ellipsisIndicator.textContent = '...';
+                            lineContainer.appendChild(ellipsisIndicator);
                             
-                            // Add double-tap functionality for editing (only in edit mode)
-                            if (isEditMode) {
-                                let lastTap = 0;
-                                expandedContainer.addEventListener('click', (e) => {
-                                    const currentTime = new Date().getTime();
-                                    const tapLength = currentTime - lastTap;
-                                    if (tapLength < 500 && tapLength > 0) {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        openTaskEditOverlay(card, task, index, columnName);
-                                    }
-                                    lastTap = currentTime;
-                                });
-                            }
+                            // Add chevron toggle button for truncated single line
+                            lineContainer.appendChild(toggleBtn);
+                            toggleBtn.setAttribute('aria-label', 'Toggle full description');
+                            toggleBtn.classList.add('visible');
                             
-                            // Note: Toggle functionality is handled by the unified system above
+                            // Toggle functionality using single container approach
+                            toggleBtn.addEventListener('click', (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                
+                                const isExpanded = descriptionContainer.classList.contains('expanded');
+                                
+                                if (isExpanded) {
+                                    // Collapse - show truncated text
+                                    descriptionContainer.classList.remove('expanded');
+                                    toggleBtn.classList.remove('expanded');
+                                    toggleBtn.setAttribute('aria-expanded', 'false');
+                                    ellipsisIndicator.classList.remove('hidden');
+                                } else {
+                                    // Expand - show full text
+                                    descriptionContainer.classList.add('expanded');
+                                    toggleBtn.classList.add('expanded');
+                                    toggleBtn.setAttribute('aria-expanded', 'true');
+                                    ellipsisIndicator.classList.add('hidden');
+                                }
+                            });
                         }
                     }
-                }, 0);
+                }, 50); // Increased timeout for proper flexbox layout completion and accurate measurements
             }
             
             // Add delete button and edit overlay (only in edit mode)
