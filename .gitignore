@@ -26,3 +26,5 @@ cursor/
 *.tmp
 *.temp
 .cache/
+.archive/
+.test/
